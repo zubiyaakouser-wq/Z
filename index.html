@@ -2566,12 +2566,8 @@ async function saveGiftAndBuildLink(){
   const giftId = currentGiftId || generateGiftId();
   currentGiftId = giftId;
 
-  if(window.storage && window.storage.set){
-    // shared=true: the RECEIVER opening this link is a different session/
-    // device than the sender, so the record must be readable by anyone,
-    // not just saved privately to the sender's own storage.
-    await window.storage.set('gift:' + giftId, JSON.stringify(payload), true);
-  }
+  const giftRef = window.firebaseDoc(window.db, "bouquets", giftId);
+  await window.firebaseSetDoc(giftRef, payload);
 
   const url = new URL(window.location.href.split('#')[0].split('?')[0]);
   url.searchParams.set('gift', giftId);
@@ -2778,24 +2774,22 @@ async function checkForSharedGift(){
 
   showReceiveLoadingState();
 
-  if(!window.storage || !window.storage.get){
-    console.warn('Storage API unavailable — cannot load shared gift');
-    showGiftNotFoundState();
-    return true;
-  }
+try{
+    const giftRef = window.firebaseDoc(window.db, "bouquets", giftId);
+    const snap = await window.firebaseGetDoc(giftRef);
 
-  try{
-    const result = await window.storage.get('gift:' + giftId, true);
-    if(!result || !result.value){
-      showGiftNotFoundState();
-      return true;
+    if(!snap.exists()){
+        showGiftNotFoundState();
+        return true;
     }
-    const decoded = JSON.parse(result.value);
+
+    const decoded = snap.data();
     showReceiverExperience(decoded);
-  }catch(e){
-    console.warn('Could not load gift payload', e);
+
+}catch(e){
+    console.error("Error loading bouquet:", e);
     showGiftNotFoundState();
-  }
+}
   return true;
 }
 
@@ -2828,6 +2822,31 @@ async function boot(){
   }
 }
 document.addEventListener('DOMContentLoaded', boot);
+</script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+import {
+  getFirestore,
+  doc,
+  setDoc,
+  getDoc
+} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCKIxXlVeGCnDVtkpsqdzu0r9rvQ0tll4k",
+  authDomain: "bouquet-bb59a.firebaseapp.com",
+  projectId: "bouquet-bb59a",
+  storageBucket: "bouquet-bb59a.firebasestorage.app",
+  messagingSenderId: "299963492292",
+  appId: "1:299963492292:web:4e516a9882d936d662e691",
+  measurementId: "G-VR78VYE55B"
+};
+
+const app = initializeApp(firebaseConfig);
+window.db = getFirestore(app);
+window.firebaseDoc = doc;
+window.firebaseSetDoc = setDoc;
+window.firebaseGetDoc = getDoc;
 </script>
 </body>
 </html>
