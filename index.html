@@ -1,0 +1,2833 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Blooms & Bows</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,600;1,9..144,500&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#FFF8F1;
+    --cream-deep:#FBEFE2;
+    --rose:#E8879A;
+    --rose-deep:#C25C74;
+    --moss:#6B8F71;
+    --moss-deep:#4E6E54;
+    --gold:#D6A24C;
+    --plum:#5B3A55;
+    --ink:#3E2E38;
+    --paper:#FFFFFF;
+    --shadow: 0 10px 30px rgba(91,58,85,0.12);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:'Quicksand', sans-serif;
+    background:
+      radial-gradient(circle at 15% 10%, #FDE9E9 0%, transparent 45%),
+      radial-gradient(circle at 85% 90%, #E9F0E1 0%, transparent 45%),
+      var(--cream);
+    color:var(--ink);
+    min-height:100vh;
+    overflow-x:hidden;
+  }
+  h1,h2,h3,.display{font-family:'Fraunces', serif;}
+  .screen{ min-height:100vh; width:100%; display:none; flex-direction:column; align-items:center; position:relative; }
+  .screen.active{ display:flex; }
+  button{font-family:'Quicksand', sans-serif; cursor:pointer; border:none;}
+
+  /* ---------- floating petals ambient bg ---------- */
+  .petal-field{ position:fixed; inset:0; pointer-events:none; z-index:0; overflow:hidden; }
+  .petal{ position:absolute; top:-40px; opacity:0.55; animation:fall linear infinite; }
+  @keyframes fall{
+    to{ transform:translateY(110vh) rotate(360deg); }
+  }
+
+  /* ================= LANDING ================= */
+  #landing{ justify-content:center; text-align:center; padding:40px 20px; }
+  .landing-inner{ position:relative; z-index:2; max-width:640px; }
+  .logo-mark{ font-size:64px; display:inline-block; animation:sway 3.5s ease-in-out infinite; filter:drop-shadow(0 6px 10px rgba(194,92,116,0.35)); }
+  @keyframes sway{ 0%,100%{transform:rotate(-8deg);} 50%{transform:rotate(8deg);} }
+  .site-title{ font-size:clamp(42px,8vw,72px); font-weight:600; color:var(--rose-deep); margin:10px 0 0; letter-spacing:0.5px; }
+  .site-tag{ font-size:15px; letter-spacing:3px; text-transform:uppercase; color:var(--moss-deep); margin-top:6px; font-weight:600; }
+  .site-sub{ margin-top:22px; font-size:17px; color:#7a6470; line-height:1.6; }
+  .start-btn{
+    margin-top:38px; background:linear-gradient(135deg,var(--rose),var(--rose-deep));
+    color:#fff; font-size:19px; font-weight:700; padding:18px 46px; border-radius:50px;
+    box-shadow:0 12px 24px rgba(194,92,116,0.35); transition:transform .25s ease, box-shadow .25s ease;
+    letter-spacing:0.5px;
+  }
+  .start-btn:hover{ transform:translateY(-4px) scale(1.03); box-shadow:0 18px 30px rgba(194,92,116,0.45); }
+  .start-btn:active{ transform:translateY(0) scale(0.98); }
+
+  /* ================= MODALS / TOASTS ================= */
+  .modal-overlay{
+    position:fixed; inset:0; background:rgba(62,46,56,0.45); backdrop-filter:blur(3px);
+    display:flex; align-items:center; justify-content:center; z-index:1000; opacity:0; pointer-events:none;
+    transition:opacity .3s ease;
+  }
+  .modal-overlay.show{ opacity:1; pointer-events:all; }
+  .modal-card{
+    background:var(--paper); border-radius:24px; padding:38px 34px; max-width:420px; width:88%;
+    text-align:center; box-shadow:0 25px 60px rgba(0,0,0,0.25); transform:scale(0.85) translateY(20px); transition:transform .35s cubic-bezier(.34,1.56,.64,1);
+    position:relative;
+  }
+  .modal-overlay.show .modal-card{ transform:scale(1) translateY(0); }
+  .modal-emoji{ font-size:54px; margin-bottom:6px; display:block; }
+  .modal-card h2{ margin:6px 0 8px; color:var(--rose-deep); font-size:26px; }
+  .modal-card p{ color:#7a6470; font-size:15px; line-height:1.6; margin:0 0 20px; }
+  .modal-btn{
+    background:linear-gradient(135deg,var(--rose),var(--rose-deep)); color:#fff; font-weight:700;
+    padding:13px 32px; border-radius:40px; font-size:15px; box-shadow:0 8px 18px rgba(194,92,116,0.3);
+  }
+  .modal-btn.secondary{ background:#fff; color:var(--moss-deep); border:2px solid var(--moss); box-shadow:none; margin-left:8px; }
+
+  .toast{
+    position:fixed; bottom:26px; left:50%; transform:translateX(-50%) translateY(20px); background:var(--plum); color:#fff;
+    padding:14px 26px; border-radius:40px; font-size:14px; font-weight:600; box-shadow:0 10px 25px rgba(0,0,0,0.25);
+    z-index:1100; opacity:0; transition:all .35s ease; pointer-events:none; display:flex; align-items:center; gap:8px;
+  }
+  .toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
+
+  /* ================= BUILDER LAYOUT ================= */
+  #builder{ align-items:stretch; }
+  .topbar{
+    width:100%; display:flex; align-items:center; justify-content:space-between; padding:14px 26px;
+    background:rgba(255,255,255,0.75); backdrop-filter:blur(8px); position:sticky; top:0; z-index:50;
+    border-bottom:1px solid rgba(194,92,116,0.15);
+  }
+  .brand-mini{ display:flex; align-items:center; gap:8px; font-family:'Fraunces',serif; font-weight:600; color:var(--rose-deep); font-size:20px; }
+  .steps-nav{ display:flex; gap:6px; flex-wrap:wrap; justify-content:center; }
+  .step-pill{
+    padding:8px 16px; border-radius:30px; font-size:13px; font-weight:600; background:#fff; color:#9a8891;
+    border:1.5px solid #f0dfe3; transition:all .2s ease; white-space:nowrap;
+  }
+  .step-pill.done{ background:var(--moss); color:#fff; border-color:var(--moss); }
+  .step-pill.active{ background:var(--rose-deep); color:#fff; border-color:var(--rose-deep); box-shadow:0 4px 12px rgba(194,92,116,0.35); }
+  .count-chip{ background:var(--cream-deep); border:1.5px solid #f0dfe3; padding:8px 14px; border-radius:30px; font-size:13px; font-weight:700; color:var(--rose-deep); }
+
+  .builder-body{ width:100%; display:flex; flex:1; min-height:calc(100vh - 66px); }
+  .canvas-pane{
+    flex:1.15; display:flex; flex-direction:column; align-items:center; justify-content:flex-start; padding:26px 18px 40px;
+    position:relative;
+  }
+  .bouquet-stage-wrap{
+    position:relative; width:min(92%, 460px); aspect-ratio:3/4; background:
+      radial-gradient(ellipse at 50% 100%, rgba(107,143,113,0.12), transparent 60%);
+    border-radius:28px;
+  }
+  #bouquetStage{ width:100%; height:100%; position:relative; user-select:none; }
+  .stage-hint{ text-align:center; color:#a88f97; font-size:13px; margin-top:6px; }
+
+  .panel{
+    flex:1; max-width:520px; background:var(--paper); border-radius:26px 0 0 0; box-shadow:var(--shadow);
+    padding:22px 22px 100px; overflow-y:auto; max-height:calc(100vh - 66px); position:sticky; top:66px;
+  }
+  .panel h2.section-title{ font-size:24px; color:var(--rose-deep); margin:0 0 4px; }
+  .panel .section-desc{ color:#8a7681; font-size:13.5px; margin:0 0 18px; line-height:1.5; }
+
+  .search-row{ display:flex; gap:8px; margin-bottom:14px; }
+  .search-row input{
+    flex:1; padding:11px 16px; border-radius:20px; border:1.5px solid #f0dfe3; font-family:inherit; font-size:14px; background:var(--cream);
+  }
+  .search-row input:focus{ outline:2px solid var(--rose); }
+
+  .chip-row{ display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px; }
+  .chip{
+    padding:7px 14px; border-radius:20px; font-size:12.5px; font-weight:600; background:var(--cream-deep); color:#7a6470;
+    border:1.5px solid transparent; transition:all .2s ease;
+  }
+  .chip.active{ background:var(--moss); color:#fff; }
+
+  .item-grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(88px,1fr)); gap:12px; }
+  .item-card{
+    background:var(--cream); border-radius:16px; padding:10px 6px 8px; text-align:center; border:2px solid transparent;
+    transition:all .18s ease; position:relative;
+  }
+  .item-card:hover{ transform:translateY(-3px); box-shadow:0 8px 16px rgba(194,92,116,0.15); }
+  .item-card.selected{ border-color:var(--rose-deep); background:#fdeef1; }
+  .item-card svg{ width:52px; height:52px; display:block; margin:0 auto 6px; filter:drop-shadow(0 3px 4px rgba(0,0,0,0.12)); }
+  .item-card .item-name{ font-size:10.5px; font-weight:700; color:#6b5560; line-height:1.2; }
+  .item-card .add-badge{
+    position:absolute; top:4px; right:4px; width:20px; height:20px; border-radius:50%; background:var(--rose-deep); color:#fff;
+    font-size:12px; display:flex; align-items:center; justify-content:center; font-weight:700;
+  }
+  .item-card.selected .add-badge{ background:var(--moss); }
+  .item-card .qty-badge{
+    position:absolute; top:4px; left:4px; min-width:18px; height:18px; padding:0 4px; border-radius:9px; background:var(--gold); color:#fff;
+    font-size:10px; display:flex; align-items:center; justify-content:center; font-weight:800;
+  }
+
+  .wrap-grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(78px,1fr)); gap:10px; }
+  .swatch-card{ text-align:center; border-radius:14px; padding:8px 4px; background:var(--cream); border:2px solid transparent; transition:all .18s ease; }
+  .swatch-card:hover{ transform:translateY(-2px); }
+  .swatch-card.selected{ border-color:var(--rose-deep); background:#fdeef1; }
+  .swatch-card svg{ width:48px; height:48px; margin-bottom:4px; }
+  .swatch-card .item-name{ font-size:10px; font-weight:700; color:#6b5560; }
+
+  .bottom-actions{
+    position:fixed; bottom:0; left:0; right:0; background:rgba(255,255,255,0.92); backdrop-filter:blur(10px);
+    border-top:1px solid #f0dfe3; padding:14px 22px; display:flex; gap:10px; justify-content:center; z-index:60; flex-wrap:wrap;
+  }
+  .btn{
+    padding:13px 26px; border-radius:40px; font-weight:700; font-size:14.5px; transition:all .2s ease;
+  }
+  .btn-primary{ background:linear-gradient(135deg,var(--rose),var(--rose-deep)); color:#fff; box-shadow:0 8px 18px rgba(194,92,116,0.3); }
+  .btn-primary:hover{ transform:translateY(-2px); }
+  .btn-ghost{ background:#fff; color:var(--moss-deep); border:2px solid var(--moss); }
+  .btn-ghost:hover{ background:var(--moss); color:#fff; }
+  .btn-skip{ background:none; color:#a88f97; text-decoration:underline; font-weight:600; }
+  .btn:disabled{ opacity:0.45; cursor:not-allowed; transform:none !important; }
+
+  /* --- flower/leaf on stage --- */
+  .stage-item{ position:absolute; cursor:grab; touch-action:none; transform-origin:center bottom; }
+  .stage-item.dragging{ cursor:grabbing; z-index:999 !important; }
+  .stage-item svg{ width:100%; height:100%; display:block; overflow:visible; }
+  .stage-item.selected::after{
+    content:''; position:absolute; inset:-8px; border:2px dashed var(--rose-deep); border-radius:50%; pointer-events:none;
+  }
+  
+  /* --- wrapper on stage --- */
+  .stage-wrapper-layer{ position:absolute; cursor:grab; touch-action:none; }
+  .stage-wrapper-layer.dragging{ cursor:grabbing; z-index:999 !important; }
+  .stage-wrapper-layer.selected::after{
+    content:''; position:absolute; inset:-6px; border:2px dashed var(--rose-deep); border-radius:8%; pointer-events:none;
+  }
+  
+  .item-controls{
+    position:absolute; top:100%; left:50%; transform:translateX(-50%); margin-top:10px; display:flex; gap:8px; flex-wrap:wrap;
+    justify-content:center; background:#fff; padding:8px 10px; border-radius:22px; box-shadow:0 8px 18px rgba(0,0,0,0.2);
+    white-space:nowrap; z-index:1000; max-width:210px;
+  }
+  .item-controls button{
+    width:34px; height:34px; border-radius:50%; background:var(--cream-deep); font-size:16px; font-weight:800; color:var(--rose-deep);
+    display:flex; align-items:center; justify-content:center; flex-shrink:0; transition:background .15s ease, transform .15s ease;
+  }
+  .item-controls button:hover{ background:var(--rose-deep); color:#fff; transform:scale(1.08); }
+  .item-controls button:active{ transform:scale(0.94); }
+  .item-controls button.remove-btn{
+    width:auto; height:34px; border-radius:20px; padding:0 14px; background:#FBE4E7; color:#C4243B; font-size:12.5px; gap:4px;
+  }
+  .item-controls button.remove-btn:hover{ background:#C4243B; color:#fff; }
+  .resize-handle{
+    position:absolute; right:-14px; bottom:-14px; width:32px; height:32px; border-radius:50%; background:#fff;
+    border:2px solid var(--rose-deep); color:var(--rose-deep); font-size:15px; display:flex; align-items:center; justify-content:center;
+    cursor:nwse-resize; box-shadow:0 4px 10px rgba(0,0,0,0.2); z-index:1001; touch-action:none;
+  }
+  .resize-handle:hover{ background:var(--rose-deep); color:#fff; }
+
+  .arrange-row{
+    display:flex; align-items:center; gap:10px; background:var(--cream); border:2px solid transparent; border-radius:14px;
+    padding:8px 10px; margin-bottom:8px; flex-wrap:wrap;
+  }
+  .arrange-row-selected{ background:#fdeef1; border-color:var(--rose-deep); }
+  .arrange-row-thumb{ width:42px; height:42px; flex-shrink:0; }
+  .arrange-row-name{ flex:1; min-width:70px; font-size:13px; font-weight:700; color:#6b5560; }
+  .arrange-row-btns{ display:flex; gap:6px; flex-wrap:wrap; }
+  .arrange-row-btns button{
+    width:30px; height:30px; border-radius:50%; background:#fff; font-weight:800; font-size:14px; color:var(--rose-deep);
+    display:flex; align-items:center; justify-content:center; transition:background .15s ease;
+  }
+  .arrange-row-btns button:hover{ background:var(--rose-deep); color:#fff; }
+  .arrange-remove-btn{
+    width:auto !important; border-radius:16px !important; padding:0 12px; background:#FBE4E7 !important; color:#C4243B !important; font-size:12px !important;
+  }
+  .arrange-remove-btn:hover{ background:#C4243B !important; color:#fff !important; }
+
+  /* wrapper/bow/card/stem on stage */
+  .stage-wrapper-layer, .stage-wrapper-overlap-layer, .stage-bow-layer, .stage-card-layer, .stage-stem-layer{ position:absolute; pointer-events:none; }
+
+
+  /* card note editor */
+  .card-note-box{
+    background:var(--cream); border-radius:18px; padding:18px; margin-top:14px;
+  }
+  .card-note-box label{ font-size:13px; font-weight:700; color:var(--moss-deep); display:block; margin-bottom:6px; }
+  .card-note-box textarea{
+    width:100%; min-height:90px; border-radius:12px; border:1.5px solid #f0dfe3; padding:12px; font-family:'Fraunces',serif; font-size:15px;
+    resize:vertical; background:#fff;
+  }
+  .card-note-box input[type=text]{
+    width:100%; padding:10px 12px; border-radius:12px; border:1.5px solid #f0dfe3; font-family:inherit; font-size:14px; margin-bottom:10px;
+  }
+  .char-count{ font-size:11px; color:#a88f97; text-align:right; margin-top:4px; }
+
+  /* share screen */
+  #shareScreen, #receiveScreen{ justify-content:center; align-items:center; padding:30px 16px; text-align:center; }
+  .share-preview-wrap{
+    background:var(--paper); border-radius:28px; box-shadow:0 25px 60px rgba(91,58,85,0.2); padding:26px; max-width:420px; width:92%;
+  }
+  .share-preview-stage{ width:100%; aspect-ratio:3/4; position:relative; margin-bottom:14px; border-radius:18px; overflow:hidden;
+    background:radial-gradient(ellipse at 50% 100%, rgba(107,143,113,0.1), transparent 60%); }
+  .share-note-preview{ background:var(--cream-deep); border-radius:14px; padding:14px 16px; font-family:'Fraunces',serif; font-style:italic; color:var(--plum); font-size:14.5px; text-align:left; margin-bottom:16px; line-height:1.5; }
+  .share-btns{ display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin-top:6px; }
+  .share-icon-btn{
+    display:flex; align-items:center; gap:8px; padding:12px 18px; border-radius:16px; font-weight:700; font-size:14px; color:#fff;
+    box-shadow:0 8px 16px rgba(0,0,0,0.15); transition:transform .2s ease;
+  }
+  .share-icon-btn:hover{ transform:translateY(-3px); }
+  .share-icon-btn:disabled{ opacity:0.5; cursor:not-allowed; transform:none; }
+  .share-icon-btn svg{ width:20px; height:20px; }
+  .wa{ background:#25D366; } .ig{ background:linear-gradient(135deg,#f58529,#dd2a7b,#8134af); } .sc{ background:#FFFC00; color:#333; }
+  .link-row{ display:flex; gap:8px; margin-top:14px; background:var(--cream); padding:8px; border-radius:14px; align-items:center; }
+  .link-row input{ flex:1; border:none; background:transparent; font-size:12px; padding:6px 8px; color:#7a6470; }
+  .copy-btn{ background:var(--rose-deep); color:#fff; padding:9px 16px; border-radius:10px; font-weight:700; font-size:12.5px; }
+
+  #receiveScreen{ background: radial-gradient(circle at 50% 0%, #FDE9E9, var(--cream) 60%); }
+  .receive-card{ background:var(--paper); border-radius:28px; box-shadow:0 25px 60px rgba(91,58,85,0.2); padding:30px; max-width:440px; width:92%; }
+  .from-line{ font-size:14px; color:#8a7681; margin-bottom:10px; }
+  .receive-note{ background:var(--cream-deep); border-radius:14px; padding:16px 18px; font-family:'Fraunces',serif; font-style:italic; color:var(--plum); margin-top:16px; font-size:15px; line-height:1.6; }
+
+  /* responsive */
+  @media (max-width:900px){
+    .builder-body{ flex-direction:column; }
+    .panel{ max-width:100%; position:relative; top:0; max-height:none; border-radius:26px 26px 0 0; }
+    .canvas-pane{ padding-top:16px; }
+  }
+  @media (prefers-reduced-motion: reduce){
+    .petal, .logo-mark{ animation:none !important; }
+  }
+
+  .empty-state{ text-align:center; color:#b09aa2; padding:40px 10px; font-size:14px; }
+  .stage-empty{
+    position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; color:#c9b6bd; text-align:center; pointer-events:none;
+  }
+  .stage-empty span{ font-size:44px; margin-bottom:8px; }
+</style>
+</head>
+<body>
+
+<div class="petal-field" id="petalField"></div>
+
+<!-- ============ LANDING SCREEN ============ -->
+<section class="screen active" id="landing">
+  <div class="landing-inner">
+    <span class="logo-mark">🌷</span>
+    <h1 class="site-title">Blooms & Bows</h1>
+    <div class="site-tag">by Tanu Javali</div>
+    <p class="site-sub">Design a one-of-a-kind bouquet, wrap it just how you like, tuck in a handwritten note, and send it to someone you love — with a link that unwraps like a real gift.</p>
+    <button class="start-btn" id="clickToStart">✨ Click to Start</button>
+  </div>
+</section>
+
+<!-- ============ BUILDER SCREEN ============ -->
+<section class="screen" id="builder">
+  <div class="topbar">
+    <div class="brand-mini"><span>🌷</span> Blooms & Bows</div>
+    <div class="steps-nav" id="stepsNav">
+      <div class="step-pill" data-step="flowers">1 · Flowers</div>
+      <div class="step-pill" data-step="arrange">2 · Arrange</div>
+      <div class="step-pill" data-step="wrapper">3 · Wrapper</div>
+      <div class="step-pill" data-step="bow">4 · Bow</div>
+      <div class="step-pill" data-step="card">5 · Card</div>
+      <div class="step-pill" data-step="share">6 · Share</div>
+    </div>
+    <div class="count-chip" id="flowerCountChip">0 / 30 flowers</div>
+  </div>
+
+  <div class="builder-body">
+    <div class="canvas-pane">
+      <div class="bouquet-stage-wrap">
+        <div id="bouquetStage">
+          <div class="stage-empty" id="stageEmptyMsg"><span>💐</span>Your bouquet will appear here<br>Tap a flower to add it</div>
+        </div>
+      </div>
+      <div class="stage-hint" id="stageHint">Tap flowers on the right to add them here. Drag to arrange, use the ➕➖ to resize, ↻ to rotate.</div>
+    </div>
+
+    <!-- PANEL: FLOWERS -->
+    <div class="panel" id="panel-flowers">
+      <h2 class="section-title">Choose your flowers 🌸</h2>
+      <p class="section-desc">Pick up to 15 stems total. Tap a flower to add one, tap again to add more of the same.</p>
+      <div class="search-row">
+        <input type="text" id="flowerSearch" placeholder="Search flowers (e.g. rose, tulip, peony)…">
+      </div>
+      <div class="chip-row" id="flowerFilterChips"></div>
+      <div class="item-grid" id="flowerGrid"></div>
+    </div>
+
+    <!-- PANEL: ARRANGE -->
+    <div class="panel" id="panel-arrange" style="display:none;">
+      <h2 class="section-title">Arrange your bouquet 🎨</h2>
+      <p class="section-desc">Drag any flower or leaf to reposition it. Select one to resize, rotate, bring it forward, or remove it.</p>
+      <div id="arrangeList" style="display:flex; flex-direction:column; gap:8px;"></div>
+      <div class="empty-state" id="arrangeEmpty">No flowers yet — go back to step 1 and add some!</div>
+    </div>
+
+    <!-- PANEL: WRAPPER -->
+    <div class="panel" id="panel-wrapper" style="display:none;">
+      <h2 class="section-title">Pick a wrapper 🎁</h2>
+      <p class="section-desc">Choose the paper that hugs your bouquet. You can also skip this step.</p>
+      <div class="wrap-grid" id="wrapperGrid"></div>
+    </div>
+
+    <!-- PANEL: BOW -->
+    <div class="panel" id="panel-bow" style="display:none;">
+      <h2 class="section-title">Add a bow 🎀</h2>
+      <p class="section-desc">A little bow ties the whole look together. Drag it on the stage to reposition, resize with the slider.</p>
+      <div class="wrap-grid" id="bowGrid"></div>
+      <div id="bowSizeControl" style="margin-top:16px; display:none;">
+        <label style="font-size:13px; font-weight:700; color:var(--moss-deep);">Bow size</label>
+        <input type="range" id="bowSizeSlider" min="60" max="160" value="100" style="width:100%;">
+      </div>
+    </div>
+
+    <!-- PANEL: CARD -->
+    <div class="panel" id="panel-card" style="display:none;">
+      <h2 class="section-title">Tuck in a card 💌</h2>
+      <p class="section-desc">Choose a design, then write your note. It'll be tagged right onto the bouquet.</p>
+      <div class="wrap-grid" id="cardGrid"></div>
+      <div class="card-note-box">
+        <label>Your note</label>
+        <input type="text" id="cardTo" placeholder="To: (e.g. Aarav)">
+        <textarea id="cardNote" maxlength="220" placeholder="Write something sweet…"></textarea>
+        <div class="char-count"><span id="cardCharCount">0</span>/220</div>
+        <input type="text" id="cardFrom" placeholder="From: (e.g. Tanu)" style="margin-top:4px;">
+      </div>
+    </div>
+
+    <!-- PANEL: SHARE (placeholder inside builder flow; actual share UI on separate screen) -->
+    <div class="panel" id="panel-share" style="display:none;">
+      <h2 class="section-title">Almost there 💐</h2>
+      <p class="section-desc">Your bouquet is ready. Continue to preview and send it to someone special.</p>
+      <button class="btn btn-primary" style="width:100%; padding:16px; font-size:16px;" id="goToShareBtn">Preview & Share →</button>
+    </div>
+  </div>
+
+  <div class="bottom-actions" id="bottomActions"></div>
+</section>
+
+<!-- ============ SHARE / PREVIEW SCREEN ============ -->
+<section class="screen" id="shareScreen">
+  <div class="share-preview-wrap">
+    <h2 style="color:var(--rose-deep); margin-top:0;">Your bouquet is ready! 🌷</h2>
+    <div class="share-preview-stage" id="sharePreviewStage"></div>
+    <div class="share-note-preview" id="shareNotePreview" style="display:none;"></div>
+    <div class="link-row">
+      <input type="text" id="shareLinkInput" readonly value="">
+      <button class="copy-btn" id="copyLinkBtn">Copy</button>
+    </div>
+    <div class="share-btns">
+      <button class="share-icon-btn wa" id="waBtn">💬 WhatsApp</button>
+      <button class="share-icon-btn ig" id="igBtn">📸 Instagram</button>
+      <button class="share-icon-btn sc" id="scBtn">👻 Snapchat</button>
+    </div>
+    <div style="margin-top:18px;">
+      <button class="btn btn-ghost" id="backToEditBtn">← Back to editing</button>
+      <button class="btn btn-primary" id="previewAsReceiverBtn" style="margin-left:8px;">See receiver view 👀</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============ RECEIVER SCREEN ============ -->
+<section class="screen" id="receiveScreen">
+  <div class="receive-card">
+    <div class="from-line" id="receiveFromLine">A gift for you</div>
+    <div class="share-preview-stage" id="receivePreviewStage"></div>
+    <div class="receive-note" id="receiveNoteBox" style="display:none;"></div>
+    <button class="btn btn-primary" style="margin-top:20px;" id="makeOwnBtn">Make my own bouquet 🌷</button>
+  </div>
+</section>
+
+<!-- ============ MODAL OVERLAY (generic) ============ -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal-card" id="modalCard"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* =========================================================================
+   BLOOMS & BOWS — full client-side bouquet builder
+   All flowers, leaves, wrappers, bows, and cards are hand-authored inline SVGs
+   so everything renders crisp, colorable, and dependency-free.
+   ========================================================================= */
+
+/* ---------------------------------------------------------------------
+   0. UTILITIES
+--------------------------------------------------------------------- */
+function svgWrap(inner, vb='0 0 100 100'){
+  return `<svg viewBox="${vb}" xmlns="http://www.w3.org/2000/svg">${inner}</svg>`;
+}
+function uid(prefix='id'){ return prefix + '_' + Math.random().toString(36).slice(2,9); }
+
+/* ---------------------------------------------------------------------
+   1. FLOWER LIBRARY  (50+ flowers across many species & colors)
+   Each flower is a function(colorHex, accentHex) -> svg markup string
+   We build a generic "layered petal bloom" generator parameterized by
+   petal count / shape / center style, then instantiate 50+ named variants.
+--------------------------------------------------------------------- */
+
+function shade(hex, amt){
+  // amt: -1..1 darker/lighter
+  let c = hex.replace('#','');
+  if(c.length===3) c = c.split('').map(x=>x+x).join('');
+  let num = parseInt(c,16);
+  let r = (num>>16)&255, g=(num>>8)&255, b=num&255;
+  const f = amt<0 ? amt*-1 : amt;
+  if(amt<0){ r=r*(1-f); g=g*(1-f); b=b*(1-f); }
+  else { r=r+(255-r)*f; g=g+(255-g)*f; b=b+(255-b)*f; }
+  r=Math.round(Math.max(0,Math.min(255,r))); g=Math.round(Math.max(0,Math.min(255,g))); b=Math.round(Math.max(0,Math.min(255,b)));
+  return '#'+[r,g,b].map(x=>x.toString(16).padStart(2,'0')).join('');
+}
+
+/* --- Rose bloom (layered spiral petals) --- */
+function makeRose(color){
+  const dark = shade(color,-0.4), mid = shade(color,-0.18), base = color, light = shade(color,0.22), hi = shade(color,0.48), deepest = shade(color,-0.55);
+  const gid = uid('rose');
+  // Realistic rose: a cupped ring of outer petals (each individually curled
+  // with a highlight + shadow edge), a mid ring turned inward, and a tight
+  // spiral bud at the center — built from bezier "petal" paths rather than
+  // plain overlapping ellipses, so each petal reads as folded fabric/paper
+  // with its own light and shadow side instead of a flat disc.
+  function petal(rot, len, width, fill, curl=1){
+    return `<g transform="rotate(${rot} 50 54)">
+      <path d="M50 54
+               C ${50-width} ${54-len*0.35}, ${50-width*0.7} ${54-len*0.85}, 50 ${54-len}
+               C ${50+width*0.7} ${54-len*0.85}, ${50+width} ${54-len*0.35}, 50 54 Z"
+            fill="${fill}"/>
+      <path d="M50 54 C ${50-width*0.25} ${54-len*0.5}, ${50-width*0.2} ${54-len*0.9}, 50 ${54-len}"
+            stroke="${shade(fill,curl>0?0.3:-0.2)}" stroke-width="1.1" fill="none" opacity="0.55"/>
+    </g>`;
+  }
+  let outerRing = '';
+  const outerCount = 8;
+  for(let i=0;i<outerCount;i++){
+    const rot = (i/outerCount)*360 + 8;
+    outerRing += petal(rot, 34, 15, i%2===0? mid : shade(mid,0.08));
+  }
+  let midRing = '';
+  const midCount = 6;
+  for(let i=0;i<midCount;i++){
+    const rot = (i/midCount)*360 - 6;
+    midRing += petal(rot, 24, 11, i%2===0? base : light);
+  }
+  let innerRing = '';
+  const innerCount = 5;
+  for(let i=0;i<innerCount;i++){
+    const rot = (i/innerCount)*360 + 20;
+    innerRing += petal(rot, 15, 7.5, i%2===0? light : hi);
+  }
+  // tight spiral bud at the very center, drawn as nested curved commas
+  const bud = `
+    <path d="M50 54 C46 50 46 44 50 40 C54 44 54 50 50 54 Z" fill="${shade(base,0.1)}"/>
+    <path d="M50 52 C47 49 47 45 50 42 C53 45 53 49 50 52 Z" fill="${hi}"/>
+    <path d="M50 50 C48.5 48.5 48.5 46.5 50 45 C51.5 46.5 51.5 48.5 50 50 Z" fill="${deepest}" opacity="0.5"/>
+  `;
+  return svgWrap(`
+    <defs>
+      <radialGradient id="${gid}-shadow" cx="50%" cy="60%" r="60%">
+        <stop offset="60%" stop-color="#000" stop-opacity="0"/>
+        <stop offset="100%" stop-color="${dark}" stop-opacity="0.35"/>
+      </radialGradient>
+    </defs>
+    <ellipse cx="50" cy="58" rx="36" ry="32" fill="${dark}" opacity="0.22"/>
+    <g>${outerRing}</g>
+    <g>${midRing}</g>
+    <g>${innerRing}</g>
+    ${bud}
+    <circle cx="50" cy="54" r="36" fill="url(#${gid}-shadow)"/>
+    <path d="M28 62 C20 66 18 76 26 80 C32 83 38 78 37 71 Z" fill="${mid}" opacity="0.85"/>
+    <path d="M72 62 C80 66 82 76 74 80 C68 83 62 78 63 71 Z" fill="${mid}" opacity="0.85"/>
+  `,'0 0 100 108');
+}
+
+/* --- Tulip bloom (cup shape) --- */
+function makeTulip(color){
+  const dark = shade(color,-0.3), light = shade(color,0.3), stemG='#5b8a5f';
+  const gid = uid('tulip');
+  return svgWrap(`
+    <defs>
+      <linearGradient id="${gid}" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="${light}"/>
+        <stop offset="100%" stop-color="${dark}"/>
+      </linearGradient>
+    </defs>
+    <path d="M50 18 C40 18 34 30 34 42 L34 58 C34 66 40 72 50 72 C60 72 66 66 66 58 L66 42 C66 30 60 18 50 18 Z" fill="url(#${gid})"/>
+    <path d="M50 20 C46 26 44 36 44 46 L44 60 C44 65 47 69 50 70 Z" fill="${color}" opacity="0.55"/>
+    <path d="M34 44 C26 46 22 56 26 64 C29 69 35 68 37 62 Z" fill="${dark}" opacity="0.85"/>
+    <path d="M66 44 C74 46 78 56 74 64 C71 69 65 68 63 62 Z" fill="${dark}" opacity="0.85"/>
+    <path d="M50 70 C48 78 48 86 50 92" stroke="${stemG}" stroke-width="4" fill="none" stroke-linecap="round"/>
+  `);
+}
+
+/* --- Sunflower (radial thin petals + textured disc) --- */
+function makeSunflower(color, discColor='#6B4A2A'){
+  const gid = uid('sun');
+  let petals = '';
+  for(let i=0;i<20;i++){
+    const ang = (i/20)*360;
+    petals += `<g transform="rotate(${ang} 50 50)"><ellipse cx="50" cy="18" rx="7" ry="17" fill="${i%2? shade(color,-0.08): color}"/></g>`;
+  }
+  let seeds='';
+  for(let i=0;i<40;i++){
+    const ang = Math.random()*Math.PI*2; const r = Math.random()*15;
+    seeds += `<circle cx="${50+Math.cos(ang)*r}" cy="${50+Math.sin(ang)*r}" r="1.3" fill="${shade(discColor, Math.random()*0.3-0.15)}"/>`;
+  }
+  return svgWrap(`
+    <g>${petals}</g>
+    <circle cx="50" cy="50" r="19" fill="${discColor}"/>
+    <circle cx="50" cy="50" r="19" fill="url(#${gid})" opacity="0.4"/>
+    <defs><radialGradient id="${gid}" cx="35%" cy="30%" r="70%"><stop offset="0%" stop-color="#000" stop-opacity="0"/><stop offset="100%" stop-color="#000" stop-opacity="0.35"/></radialGradient></defs>
+    ${seeds}
+  `);
+}
+
+/* --- Carnation (ruffled fringe petals) --- */
+function makeCarnation(color){
+  const dark = shade(color,-0.25), light = shade(color,0.3);
+  let layers='';
+  for(let L=0; L<4; L++){
+    const r = 34 - L*6;
+    let ruffle='';
+    const n=16;
+    for(let i=0;i<n;i++){
+      const ang = (i/n)*360 + L*11;
+      ruffle += `<g transform="rotate(${ang} 50 50)"><path d="M50 50 L${50-4} ${50-r} Q50 ${50-r-5} ${50+4} ${50-r} Z" fill="${L%2? light: color}" opacity="0.95"/></g>`;
+    }
+    layers += ruffle;
+  }
+  return svgWrap(`<g filter="url(#soft)">${layers}</g>
+    <circle cx="50" cy="50" r="6" fill="${dark}"/>
+    <defs><filter id="soft"><feDropShadow dx="0" dy="1" stdDeviation="1" flood-color="${dark}" flood-opacity="0.3"/></filter></defs>
+  `);
+}
+
+/* --- Orchid (exotic asymmetric petals) --- */
+function makeOrchid(color, throatColor='#F9E27A'){
+  const dark = shade(color,-0.25), light = shade(color,0.35);
+  return svgWrap(`
+    <g>
+      <ellipse cx="50" cy="30" rx="14" ry="20" fill="${color}" transform="rotate(0 50 30)"/>
+      <ellipse cx="26" cy="46" rx="14" ry="19" fill="${light}" transform="rotate(-35 26 46)"/>
+      <ellipse cx="74" cy="46" rx="14" ry="19" fill="${light}" transform="rotate(35 74 46)"/>
+      <ellipse cx="34" cy="66" rx="12" ry="17" fill="${color}" transform="rotate(-60 34 66)"/>
+      <ellipse cx="66" cy="66" rx="12" ry="17" fill="${color}" transform="rotate(60 66 66)"/>
+      <path d="M50 48 C40 50 38 62 48 70 C56 76 66 70 64 60 C62 52 56 48 50 48 Z" fill="${throatColor}"/>
+      <g fill="${dark}" opacity="0.6">
+        <circle cx="47" cy="58" r="1.2"/><circle cx="52" cy="60" r="1.2"/><circle cx="49" cy="64" r="1.2"/>
+      </g>
+    </g>
+  `);
+}
+
+/* --- Lily (trumpet, 6 recurved petals) --- */
+function makeLily(color, spotColor='#B33A3A'){
+  const dark = shade(color,-0.2), light = shade(color,0.35);
+  let petals='';
+  for(let i=0;i<6;i++){
+    const ang = i*60;
+    petals += `<g transform="rotate(${ang} 50 52)">
+      <path d="M50 52 C46 38 44 22 50 14 C56 22 54 38 50 52 Z" fill="${i%2? light: color}"/>
+      <path d="M50 52 C48 42 47 30 50 22 C51 30 52 42 50 52 Z" fill="${dark}" opacity="0.25"/>
+    </g>`;
+  }
+  let spots='';
+  for(let i=0;i<10;i++){
+    const a = Math.random()*Math.PI*2, r=8+Math.random()*10;
+    spots += `<circle cx="${50+Math.cos(a)*r*0.4}" cy="${52-8-Math.random()*14}" r="0.9" fill="${spotColor}" opacity="0.6"/>`;
+  }
+  return svgWrap(`<g>${petals}</g>
+    <g stroke="${dark}" stroke-width="1" stroke-linecap="round">
+      <line x1="50" y1="52" x2="42" y2="36"/><line x1="50" y1="52" x2="47" y2="34"/>
+      <line x1="50" y1="52" x2="53" y2="34"/><line x1="50" y1="52" x2="58" y2="36"/>
+    </g>
+    <circle cx="50" cy="52" r="3" fill="${shade(color,-0.4)}"/>
+    ${spots}
+  `);
+}
+
+/* --- Peony (dense ruffled ball) --- */
+function makePeony(color){
+  const dark=shade(color,-0.25), light=shade(color,0.3), hi=shade(color,0.5);
+  let layers='';
+  for(let L=0;L<5;L++){
+    const r=32-L*5.5; const n=10+L;
+    for(let i=0;i<n;i++){
+      const ang=(i/n)*360+L*17;
+      layers += `<g transform="rotate(${ang} 50 50)"><ellipse cx="50" cy="${50-r}" rx="9" ry="12" fill="${L%2?light:color}" opacity="0.96"/></g>`;
+    }
+  }
+  return svgWrap(`<circle cx="50" cy="50" r="34" fill="${dark}" opacity="0.15"/>${layers}<circle cx="50" cy="50" r="7" fill="${hi}"/>`);
+}
+
+/* --- Daisy (simple flat petals + yellow disc) --- */
+function makeDaisy(color, discColor='#F2C230'){
+  let petals='';
+  for(let i=0;i<14;i++){
+    const ang=(i/14)*360;
+    petals += `<g transform="rotate(${ang} 50 50)"><ellipse cx="50" cy="24" rx="6" ry="16" fill="${color}"/></g>`;
+  }
+  return svgWrap(`<g>${petals}</g><circle cx="50" cy="50" r="13" fill="${discColor}"/><circle cx="50" cy="50" r="13" fill="#000" opacity="0.08"/>`);
+}
+
+/* --- Ranunculus (tight concentric rose-like) --- */
+function makeRanunculus(color){
+  const dark=shade(color,-0.2), light=shade(color,0.35);
+  let layers='';
+  for(let L=0;L<6;L++){
+    const r=30-L*4.5; const n=8;
+    for(let i=0;i<n;i++){
+      const ang=(i/n)*360+L*20;
+      layers += `<g transform="rotate(${ang} 50 50)"><ellipse cx="50" cy="${50-r}" rx="7" ry="8" fill="${L%2?light:color}"/></g>`;
+    }
+  }
+  return svgWrap(`${layers}<circle cx="50" cy="50" r="4" fill="${dark}"/>`);
+}
+
+/* --- Hydrangea cluster (many tiny 4-petal florets) --- */
+function makeHydrangea(color){
+  const dark = shade(color,-0.2);
+  let florets='';
+  for(let i=0;i<9;i++){
+    const a = Math.random()*Math.PI*2, r = Math.random()*26;
+    const cx = 50+Math.cos(a)*r, cy=50+Math.sin(a)*r;
+    florets += `<g transform="translate(${cx-50} ${cy-50})">
+      <ellipse cx="46" cy="46" rx="6" ry="6" fill="${color}"/><ellipse cx="54" cy="46" rx="6" ry="6" fill="${color}"/>
+      <ellipse cx="46" cy="54" rx="6" ry="6" fill="${color}"/><ellipse cx="54" cy="54" rx="6" ry="6" fill="${color}"/>
+      <circle cx="50" cy="50" r="2.5" fill="${dark}"/>
+    </g>`;
+  }
+  return svgWrap(florets);
+}
+
+/* --- Baby's breath (tiny cloud of dots) --- */
+function makeBabysBreath(){
+  let dots='';
+  for(let i=0;i<26;i++){
+    const a=Math.random()*Math.PI*2, r=Math.random()*32;
+    dots += `<circle cx="${50+Math.cos(a)*r}" cy="${50+Math.sin(a)*r}" r="${2+Math.random()*2}" fill="#fff" stroke="#e8dfe6" stroke-width="0.5"/>`;
+  }
+  return svgWrap(dots);
+}
+
+/* --- Anemone (dark center + flat petals) --- */
+function makeAnemone(color){
+  const dark = shade(color,-0.15);
+  let petals='';
+  for(let i=0;i<7;i++){
+    const ang=(i/7)*360;
+    petals += `<g transform="rotate(${ang} 50 50)"><ellipse cx="50" cy="26" rx="11" ry="17" fill="${color}"/></g>`;
+  }
+  return svgWrap(`${petals}<circle cx="50" cy="50" r="11" fill="#2b2230"/><circle cx="50" cy="50" r="11" fill="url(#anemGrad)"/>
+  <defs><radialGradient id="anemGrad" cx="50%" cy="35%" r="70%"><stop offset="0%" stop-color="#5a4a5f"/><stop offset="100%" stop-color="#1c1620"/></radialGradient></defs>`);
+}
+
+/* --- Iris --- */
+function makeIris(color, fallColor){
+  fallColor = fallColor || shade(color,-0.1);
+  return svgWrap(`
+    <path d="M50 55 C40 60 30 70 30 80 C30 86 36 88 40 82 C44 76 48 64 50 55 Z" fill="${fallColor}"/>
+    <path d="M50 55 C60 60 70 70 70 80 C70 86 64 88 60 82 C56 76 52 64 50 55 Z" fill="${fallColor}"/>
+    <path d="M50 20 C42 26 40 40 50 55 C60 40 58 26 50 20 Z" fill="${color}"/>
+    <path d="M50 30 C46 36 46 44 50 50 C54 44 54 36 50 30 Z" fill="${shade(color,0.3)}"/>
+    <path d="M50 55 C46 58 44 62 46 66 C48 63 49 59 50 55 Z" fill="#F2C230" opacity="0.8"/>
+  `);
+}
+
+/* --- Chrysanthemum (dense spiky) --- */
+function makeChrysanthemum(color){
+  const dark=shade(color,-0.15);
+  let petals='';
+  for(let L=0;L<4;L++){
+    const r=32-L*6, n=16;
+    for(let i=0;i<n;i++){
+      const ang=(i/n)*360+L*11;
+      petals += `<g transform="rotate(${ang} 50 50)"><line x1="50" y1="50" x2="50" y2="${50-r}" stroke="${L%2?shade(color,0.2):color}" stroke-width="2.6" stroke-linecap="round"/></g>`;
+    }
+  }
+  return svgWrap(`${petals}<circle cx="50" cy="50" r="5" fill="${dark}"/>`);
+}
+
+/* --- Poppy --- */
+function makePoppy(color){
+  const dark=shade(color,-0.3);
+  let petals='';
+  for(let i=0;i<5;i++){
+    const ang=(i/5)*360;
+    petals += `<g transform="rotate(${ang} 50 50)"><path d="M50 50 C40 40 36 26 50 18 C64 26 60 40 50 50 Z" fill="${color}"/></g>`;
+  }
+  return svgWrap(`${petals}<circle cx="50" cy="50" r="9" fill="#2b2230"/>
+    <g stroke="#8a6a2a" stroke-width="1.4"><line x1="46" y1="46" x2="42" y2="40"/><line x1="54" y1="46" x2="58" y2="40"/><line x1="50" y1="44" x2="50" y2="38"/></g>`);
+}
+
+/* --- Dahlia (many pointed layered petals) --- */
+function makeDahlia(color){
+  const dark=shade(color,-0.2), light=shade(color,0.3);
+  let layers='';
+  for(let L=0;L<6;L++){
+    const r=32-L*5, n=10;
+    for(let i=0;i<n;i++){
+      const ang=(i/n)*360+L*18;
+      layers += `<g transform="rotate(${ang} 50 50)"><path d="M50 50 L47 ${50-r} L50 ${50-r-3} L53 ${50-r} Z" fill="${L%2?light:color}"/></g>`;
+    }
+  }
+  return svgWrap(`${layers}<circle cx="50" cy="50" r="4" fill="${dark}"/>`);
+}
+
+/* --- Gerbera (flat bold petals, bicolor disc) --- */
+function makeGerbera(color, discColor='#3d2b1f'){
+  let petals='';
+  for(let i=0;i<18;i++){
+    const ang=(i/18)*360;
+    petals += `<g transform="rotate(${ang} 50 50)"><path d="M50 26 L47 24 C46 30 46 40 50 46 C54 40 54 30 53 24 Z" fill="${color}"/></g>`;
+  }
+  return svgWrap(`${petals}<circle cx="50" cy="50" r="12" fill="${discColor}"/>
+    <g fill="#000" opacity="0.15"><circle cx="46" cy="46" r="1"/><circle cx="54" cy="46" r="1"/><circle cx="50" cy="52" r="1"/><circle cx="45" cy="53" r="1"/><circle cx="55" cy="53" r="1"/></g>`);
+}
+
+/* --- Freesia (small trumpet cluster) --- */
+function makeFreesia(color){
+  const light=shade(color,0.3);
+  return svgWrap(`
+    <path d="M50 30 C40 32 36 44 42 54 C46 60 54 60 58 54 C64 44 60 32 50 30 Z" fill="${color}"/>
+    <path d="M50 36 C44 38 42 46 46 52 C48 55 52 55 54 52 C58 46 56 38 50 36 Z" fill="${light}"/>
+    <circle cx="50" cy="46" r="3" fill="#F2C230"/>
+  `);
+}
+
+/* --- Lavender sprig (small purple spike) --- */
+function makeLavenderSprig(){
+  let buds='';
+  for(let i=0;i<9;i++){
+    buds += `<ellipse cx="50" cy="${20+i*7}" rx="${6-i*0.2}" ry="4" fill="${i%2?'#9C7FC7':'#8567B8'}"/>`;
+  }
+  return svgWrap(`<line x1="50" y1="24" x2="50" y2="86" stroke="#6B8F71" stroke-width="2.5"/>${buds}`);
+}
+
+/* --- Alstroemeria (freckled trumpet) --- */
+function makeAlstroemeria(color){
+  const dark=shade(color,-0.2);
+  let petals='';
+  for(let i=0;i<6;i++){
+    const ang=i*60;
+    petals += `<g transform="rotate(${ang} 50 50)"><ellipse cx="50" cy="30" rx="8" ry="18" fill="${i===0||i===3?shade(color,0.25):color}"/></g>`;
+  }
+  let freckles='';
+  for(let i=0;i<6;i++) freckles += `<circle cx="${47+Math.random()*6}" cy="${34+Math.random()*8}" r="0.8" fill="${dark}"/>`;
+  return svgWrap(`${petals}${freckles}<circle cx="50" cy="50" r="3" fill="${dark}"/>`);
+}
+
+/* --- Protea (exotic spiky crown) --- */
+function makeProtea(color){
+  const dark=shade(color,-0.25), light=shade(color,0.35);
+  let outer='';
+  for(let i=0;i<20;i++){
+    const ang=(i/20)*360;
+    outer += `<g transform="rotate(${ang} 50 50)"><path d="M50 50 L46 20 L50 14 L54 20 Z" fill="${i%3===0?light:color}"/></g>`;
+  }
+  return svgWrap(`${outer}<circle cx="50" cy="50" r="14" fill="${dark}"/>
+    <g fill="#fff" opacity="0.7"><circle cx="46" cy="46" r="1"/><circle cx="54" cy="46" r="1"/><circle cx="50" cy="52" r="1"/><circle cx="44" cy="53" r="1"/><circle cx="56" cy="53" r="1"/><circle cx="50" cy="58" r="1"/></g>`);
+}
+
+/* --- Camellia (glossy layered rounded petals) --- */
+function makeCamellia(color){
+  const light=shade(color,0.3), hi=shade(color,0.5), dark=shade(color,-0.2);
+  let layers='';
+  for(let L=0;L<3;L++){
+    const r=28-L*7, n=7;
+    for(let i=0;i<n;i++){
+      const ang=(i/n)*360+L*15;
+      layers += `<g transform="rotate(${ang} 50 50)"><ellipse cx="50" cy="${50-r}" rx="11" ry="12" fill="${L%2?light:color}"/></g>`;
+    }
+  }
+  return svgWrap(`${layers}<circle cx="50" cy="50" r="6" fill="#F2C230"/>`);
+}
+
+/* --- Marigold (ruffled orange/yellow pompom) --- */
+function makeMarigold(color){
+  const dark=shade(color,-0.2);
+  let layers='';
+  for(let L=0;L<4;L++){
+    const r=26-L*5, n=12;
+    for(let i=0;i<n;i++){
+      const ang=(i/n)*360+L*13;
+      layers += `<g transform="rotate(${ang} 50 50)"><path d="M50 50 L47 ${50-r} Q50 ${50-r-4} 53 ${50-r} Z" fill="${L%2?shade(color,0.25):color}"/></g>`;
+    }
+  }
+  return svgWrap(`${layers}<circle cx="50" cy="50" r="4" fill="${dark}"/>`);
+}
+
+/* --- Cosmos (delicate thin flat petals) --- */
+function makeCosmos(color){
+  let petals='';
+  for(let i=0;i<8;i++){
+    const ang=(i/8)*360;
+    petals += `<g transform="rotate(${ang} 50 50)"><path d="M50 50 L44 24 Q50 18 56 24 Z" fill="${color}"/></g>`;
+  }
+  return svgWrap(`${petals}<circle cx="50" cy="50" r="7" fill="#F2C230"/>`);
+}
+
+/* --- Amaryllis (huge trumpet, 6 broad petals) --- */
+function makeAmaryllis(color){
+  const dark=shade(color,-0.2), light=shade(color,0.3);
+  let petals='';
+  for(let i=0;i<6;i++){
+    const ang=i*60;
+    petals += `<g transform="rotate(${ang} 50 52)"><path d="M50 52 C42 40 40 24 50 12 C60 24 58 40 50 52 Z" fill="${i%2?light:color}"/>
+    <line x1="50" y1="50" x2="50" y2="20" stroke="${dark}" stroke-width="0.8" opacity="0.5"/></g>`;
+  }
+  return svgWrap(`${petals}<circle cx="50" cy="52" r="4" fill="${dark}"/>`);
+}
+
+/* --- Zinnia (layered flat bold petals) --- */
+function makeZinnia(color){
+  const light=shade(color,0.3);
+  let layers='';
+  for(let L=0;L<3;L++){
+    const r=28-L*7, n=8;
+    for(let i=0;i<n;i++){
+      const ang=(i/n)*360+L*15;
+      layers += `<g transform="rotate(${ang} 50 50)"><path d="M50 50 L45 ${50-r} L50 ${50-r-4} L55 ${50-r} Z" fill="${L%2?light:color}"/></g>`;
+    }
+  }
+  return svgWrap(`${layers}<circle cx="50" cy="50" r="5" fill="#F2C230"/>`);
+}
+
+/* --- Bluebell / hyacinth spike --- */
+function makeHyacinth(color){
+  let bells='';
+  for(let i=0;i<10;i++){
+    const y=18+i*6.5, x=50+(i%2===0?-8:8)*(1-i/14);
+    bells += `<ellipse cx="${x}" cy="${y}" rx="6" ry="5" fill="${color}" transform="rotate(${i%2===0?-30:30} ${x} ${y})"/>`;
+  }
+  return svgWrap(`<line x1="50" y1="18" x2="50" y2="88" stroke="#6B8F71" stroke-width="3"/>${bells}`);
+}
+
+/* --- Snapdragon spike --- */
+function makeSnapdragon(color){
+  let florets='';
+  for(let i=0;i<8;i++){
+    const y = 20+i*7;
+    florets += `<ellipse cx="50" cy="${y}" rx="${8-i*0.3}" ry="5" fill="${i%2?shade(color,0.2):color}"/>`;
+  }
+  return svgWrap(`<line x1="50" y1="20" x2="50" y2="88" stroke="#6B8F71" stroke-width="2.5"/>${florets}`);
+}
+
+/* --- Waxflower (tiny star cluster) --- */
+function makeWaxflower(color){
+  let stars='';
+  for(let i=0;i<10;i++){
+    const a=Math.random()*Math.PI*2, r=Math.random()*26;
+    stars += `<g transform="translate(${Math.cos(a)*r} ${Math.sin(a)*r})">
+      <path d="M50 46 L52 50 L50 54 L48 50 Z M46 50 L50 48 L54 50 L50 52 Z" fill="${color}"/></g>`;
+  }
+  return svgWrap(stars);
+}
+
+/* --- Statice (papery cluster) --- */
+function makeStatice(color){
+  let clusters='';
+  for(let i=0;i<14;i++){
+    const a=Math.random()*Math.PI*2, r=Math.random()*28;
+    clusters += `<rect x="${48+Math.cos(a)*r}" y="${48+Math.sin(a)*r}" width="4" height="3" fill="${color}" opacity="0.9"/>`;
+  }
+  return svgWrap(clusters);
+}
+
+/* --- Bird of paradise (dramatic tropical) --- */
+function makeBirdOfParadise(){
+  return svgWrap(`
+    <path d="M30 70 C25 50 35 25 55 20" stroke="#3a6b3f" stroke-width="6" fill="none" stroke-linecap="round"/>
+    <path d="M55 20 C60 25 62 32 58 36 C65 33 72 36 72 42 C72 48 65 50 58 47 C61 52 60 58 55 60" fill="#E8632B"/>
+    <path d="M55 20 C58 26 58 34 54 40 C58 38 63 40 63 45" fill="#F2C230"/>
+    <ellipse cx="48" cy="66" rx="10" ry="5" fill="#5b3a55"/>
+  `);
+}
+
+/* --- Protea-like king protea variant already covered; add Calla lily --- */
+function makeCallaLily(color){
+  const dark=shade(color,-0.15);
+  return svgWrap(`
+    <path d="M50 20 C30 24 22 44 30 62 C36 74 50 78 58 68 C66 58 70 40 62 26 C58 20 54 19 50 20 Z" fill="${color}"/>
+    <path d="M50 24 C38 30 34 46 42 58 C46 64 54 66 58 60" fill="${shade(color,0.25)}" opacity="0.6"/>
+    <line x1="50" y1="30" x2="50" y2="70" stroke="#F2C230" stroke-width="4" stroke-linecap="round"/>
+    <line x1="50" y1="70" x2="50" y2="92" stroke="#4E6E54" stroke-width="4" stroke-linecap="round"/>
+  `);
+}
+
+/* --- Gardenia (creamy waxy layered) --- */
+function makeGardenia(){
+  let layers='';
+  for(let L=0;L<3;L++){
+    const r=26-L*6, n=6;
+    for(let i=0;i<n;i++){
+      const ang=(i/n)*360+L*18;
+      layers += `<g transform="rotate(${ang} 50 50)"><ellipse cx="50" cy="${50-r}" rx="10" ry="13" fill="${L%2?'#FFFDF7':'#FFFBEF'}"/></g>`;
+    }
+  }
+  return svgWrap(`${layers}<circle cx="50" cy="50" r="6" fill="#F2C230"/>`);
+}
+
+/* --- Sweet pea (delicate ruffled bicolor) --- */
+function makeSweetPea(color){
+  const light=shade(color,0.4);
+  return svgWrap(`
+    <path d="M50 65 C36 60 32 44 42 32 C48 26 56 26 60 34 C64 42 60 50 54 52 Q60 56 58 64 C56 70 50 68 50 65 Z" fill="${color}"/>
+    <ellipse cx="50" cy="42" rx="9" ry="12" fill="${light}"/>
+  `);
+}
+
+/* --- Delphinium spike --- */
+function makeDelphinium(color){
+  let florets='';
+  for(let i=0;i<9;i++){
+    const y=18+i*7.5;
+    florets += `<g transform="translate(0 ${y-50})"><ellipse cx="46" cy="50" rx="5" ry="5" fill="${color}"/><ellipse cx="54" cy="50" rx="5" ry="5" fill="${color}"/><circle cx="50" cy="50" r="1.5" fill="#fff"/></g>`;
+  }
+  return svgWrap(`<line x1="50" y1="18" x2="50" y2="90" stroke="#4E6E54" stroke-width="2.5"/>${florets}`);
+}
+
+/* --- Aster (thin spiky petals, yellow center) --- */
+function makeAster(color){
+  let petals='';
+  for(let i=0;i<20;i++){
+    const ang=(i/20)*360;
+    petals += `<g transform="rotate(${ang} 50 50)"><line x1="50" y1="50" x2="50" y2="21" stroke="${color}" stroke-width="2.2" stroke-linecap="round"/></g>`;
+  }
+  return svgWrap(`${petals}<circle cx="50" cy="50" r="8" fill="#F2C230"/>`);
+}
+
+/* --- Magnolia (large waxy petals) --- */
+function makeMagnolia(color){
+  const light=shade(color,0.35), dark=shade(color,-0.15);
+  let petals='';
+  for(let i=0;i<7;i++){
+    const ang=(i/7)*360;
+    petals += `<g transform="rotate(${ang} 50 52)"><ellipse cx="50" cy="26" rx="13" ry="22" fill="${i%2?light:color}"/></g>`;
+  }
+  return svgWrap(`${petals}<circle cx="50" cy="52" r="6" fill="${dark}"/>`);
+}
+
+/* --- Hibiscus (5 broad petals + long stamen) --- */
+function makeHibiscus(color){
+  const dark=shade(color,-0.2);
+  let petals='';
+  for(let i=0;i<5;i++){
+    const ang=(i/5)*360;
+    petals += `<g transform="rotate(${ang} 50 50)"><path d="M50 50 C38 44 36 28 50 20 C64 28 62 44 50 50 Z" fill="${color}"/></g>`;
+  }
+  return svgWrap(`${petals}<line x1="50" y1="50" x2="50" y2="66" stroke="#e8632b" stroke-width="3"/><circle cx="50" cy="66" r="3" fill="#F2C230"/><circle cx="50" cy="50" r="4" fill="${dark}"/>`);
+}
+
+/* --- Buttercup (glossy small 5-petal) --- */
+function makeButtercup(color){
+  let petals='';
+  for(let i=0;i<5;i++){
+    const ang=(i/5)*360;
+    petals += `<g transform="rotate(${ang} 50 50)"><ellipse cx="50" cy="36" rx="9" ry="13" fill="${color}"/></g>`;
+  }
+  return svgWrap(`${petals}<circle cx="50" cy="50" r="5" fill="#e8a92a"/>`);
+}
+
+/* --- Forget-me-not (tiny 5-petal cluster) --- */
+function makeForgetMeNot(){
+  let florets='';
+  for(let i=0;i<8;i++){
+    const a=Math.random()*Math.PI*2, r=Math.random()*24;
+    const cx=50+Math.cos(a)*r, cy=50+Math.sin(a)*r;
+    florets += `<g transform="translate(${cx-50} ${cy-50})">`;
+    for(let p=0;p<5;p++){
+      const pang=p*72;
+      florets += `<g transform="rotate(${pang} 50 50)"><ellipse cx="50" cy="46" rx="3" ry="3.4" fill="#8FB6E8"/></g>`;
+    }
+    florets += `<circle cx="50" cy="50" r="1.4" fill="#F2C230"/></g>`;
+  }
+  return svgWrap(florets);
+}
+
+/* --- Foxglove spike --- */
+function makeFoxglove(color){
+  let bells='';
+  for(let i=0;i<9;i++){
+    const y=18+i*7.5, x=50+(i%2===0?-9:9)*0.7;
+    bells += `<ellipse cx="${x}" cy="${y}" rx="7" ry="9" fill="${color}" opacity="${1-i*0.03}"/>`;
+  }
+  return svgWrap(`<line x1="50" y1="18" x2="50" y2="90" stroke="#4E6E54" stroke-width="3"/>${bells}`);
+}
+
+/* --- Queen Anne's lace (flat umbrella of tiny dots) --- */
+function makeQueenAnnesLace(){
+  let dots='';
+  for(let ring=0; ring<3; ring++){
+    const r = 10+ring*9, n=8+ring*6;
+    for(let i=0;i<n;i++){
+      const ang=(i/n)*Math.PI*2;
+      dots += `<circle cx="${50+Math.cos(ang)*r}" cy="${50+Math.sin(ang)*r}" r="2" fill="#FDFBF6" stroke="#e5ded2" stroke-width="0.4"/>`;
+    }
+  }
+  return svgWrap(dots);
+}
+
+/* --- Wild Poppy variant / Icelandic poppy --- */
+function makeIcelandPoppy(color){
+  const light = shade(color,0.35);
+  let petals='';
+  for(let i=0;i<4;i++){
+    const ang=(i/4)*360+20;
+    petals += `<g transform="rotate(${ang} 50 50)"><path d="M50 50 C36 42 34 24 50 16 C66 24 64 42 50 50 Z" fill="${i%2?light:color}" opacity="0.95"/></g>`;
+  }
+  return svgWrap(`${petals}<circle cx="50" cy="50" r="7" fill="#3a6b3f"/>`);
+}
+
+/* --- Star of Bethlehem --- */
+function makeStarOfBethlehem(){
+  let stars='';
+  for(let i=0;i<7;i++){
+    const a=Math.random()*Math.PI*2, r=Math.random()*24;
+    const cx=50+Math.cos(a)*r, cy=50+Math.sin(a)*r;
+    let pts=[];
+    for(let p=0;p<6;p++){
+      const pang=p*60*(Math.PI/180);
+      pts.push(`${cx+Math.cos(pang)*7},${cy+Math.sin(pang)*7}`);
+    }
+    stars += `<polygon points="${pts.join(' ')}" fill="#FFFDF7" stroke="#eee" stroke-width="0.5"/><circle cx="${cx}" cy="${cy}" r="1.6" fill="#F2C230"/>`;
+  }
+  return svgWrap(stars);
+}
+
+/* --- Generic 6-petal wildflower generator for extra variety with color param --- */
+function makeWildflower6(color, discColor='#F2C230'){
+  let petals='';
+  for(let i=0;i<6;i++){
+    const ang=(i/6)*360;
+    petals += `<g transform="rotate(${ang} 50 50)"><ellipse cx="50" cy="30" rx="8" ry="16" fill="${color}"/></g>`;
+  }
+  return svgWrap(`${petals}<circle cx="50" cy="50" r="8" fill="${discColor}"/>`);
+}
+
+/* --- Leaves --- */
+function makeLeaf(color='#5B8A5F', variant='simple'){
+  if(variant==='fern'){
+    let fronds='';
+    for(let i=0;i<7;i++){
+      const y=15+i*10;
+      fronds += `<ellipse cx="35" cy="${y}" rx="10" ry="4" fill="${color}" transform="rotate(-20 35 ${y})"/><ellipse cx="65" cy="${y}" rx="10" ry="4" fill="${color}" transform="rotate(20 65 ${y})"/>`;
+    }
+    return svgWrap(`<line x1="50" y1="10" x2="50" y2="90" stroke="${shade(color,-0.2)}" stroke-width="2"/>${fronds}`,'0 0 100 100');
+  }
+  if(variant==='eucalyptus'){
+    let rounds='';
+    for(let i=0;i<8;i++){
+      const y=14+i*10, x=50+(i%2===0?-14:14);
+      rounds += `<ellipse cx="${x}" cy="${y}" rx="8" ry="7" fill="${i%2===0?color:shade(color,0.15)}"/>`;
+    }
+    return svgWrap(`<line x1="50" y1="10" x2="50" y2="88" stroke="${shade(color,-0.2)}" stroke-width="2.5"/>${rounds}`);
+  }
+  if(variant==='monstera'){
+    return svgWrap(`
+      <path d="M50 90 C30 80 18 55 26 30 C32 14 50 8 50 8 C50 8 68 14 74 30 C82 55 70 80 50 90 Z" fill="${color}"/>
+      <path d="M50 90 L50 10" stroke="${shade(color,-0.3)}" stroke-width="1.5"/>
+      <ellipse cx="36" cy="34" rx="4" ry="7" fill="${shade(color,-0.15)}" opacity="0.6"/>
+      <ellipse cx="64" cy="34" rx="4" ry="7" fill="${shade(color,-0.15)}" opacity="0.6"/>
+      <ellipse cx="32" cy="54" rx="4" ry="8" fill="${shade(color,-0.15)}" opacity="0.6"/>
+      <ellipse cx="68" cy="54" rx="4" ry="8" fill="${shade(color,-0.15)}" opacity="0.6"/>
+    `);
+  }
+  if(variant==='palm'){
+    let fronds='';
+    const n=9;
+    for(let i=0;i<n;i++){
+      const ang=-70+(i/(n-1))*140;
+      fronds += `<g transform="rotate(${ang} 50 88)"><path d="M50 88 C48 60 48 30 50 12 C52 30 52 60 50 88 Z" fill="${i%2?shade(color,0.12):color}"/></g>`;
+    }
+    return svgWrap(`${fronds}<circle cx="50" cy="88" r="3" fill="${shade(color,-0.3)}"/>`);
+  }
+  if(variant==='ivy'){
+    return svgWrap(`
+      <path d="M50 88 C30 84 18 66 22 46 C25 30 38 18 50 18 C62 18 75 30 78 46 C82 66 70 84 50 88 Z" fill="${color}"/>
+      <path d="M50 18 L38 46 M50 18 L50 50 M50 18 L62 46" stroke="${shade(color,-0.3)}" stroke-width="1" opacity="0.55"/>
+      <path d="M50 88 L50 92" stroke="${shade(color,-0.3)}" stroke-width="2"/>
+    `);
+  }
+  if(variant==='olive'){
+    let leaves='';
+    for(let i=0;i<10;i++){
+      const y=14+i*7.5, x=50+(i%2===0?-10:10);
+      leaves += `<ellipse cx="${x}" cy="${y}" rx="4.5" ry="10" fill="${i%2===0?color:shade(color,0.2)}" transform="rotate(${i%2===0?-25:25} ${x} ${y})"/>`;
+    }
+    return svgWrap(`<line x1="50" y1="10" x2="50" y2="88" stroke="${shade(color,-0.25)}" stroke-width="2"/>${leaves}`);
+  }
+  if(variant==='ruscus'){
+    let leaflets='';
+    for(let i=0;i<11;i++){
+      const y=12+i*6.8, x=50+(i%2===0?-9:9);
+      leaflets += `<path d="M50 ${y} Q ${x} ${y-3} ${x} ${y+4} Q 50 ${y+5} 50 ${y} Z" fill="${i%2===0?color:shade(color,0.15)}"/>`;
+    }
+    return svgWrap(`<line x1="50" y1="10" x2="50" y2="90" stroke="${shade(color,-0.25)}" stroke-width="1.6"/>${leaflets}`);
+  }
+  if(variant==='seeded-eucalyptus'){
+    let rounds='';
+    for(let i=0;i<7;i++){
+      const y=14+i*11, x=50+(i%2===0?-13:13);
+      rounds += `<circle cx="${x}" cy="${y}" r="6" fill="${i%2===0?color:shade(color,0.18)}"/><circle cx="${x}" cy="${y}" r="2" fill="${shade(color,-0.35)}" opacity="0.6"/>`;
+    }
+    return svgWrap(`<line x1="50" y1="10" x2="50" y2="88" stroke="${shade(color,-0.2)}" stroke-width="2.3"/>${rounds}`);
+  }
+  if(variant==='fan-palm'){
+    let blades='';
+    const n=7;
+    for(let i=0;i<n;i++){
+      const ang=(i/(n-1))*160-80;
+      blades += `<g transform="rotate(${ang} 50 92)"><path d="M50 92 C44 66 42 40 50 16 C58 40 56 66 50 92 Z" fill="${i%2?shade(color,0.1):color}"/></g>`;
+    }
+    return svgWrap(`${blades}<circle cx="50" cy="92" r="3.5" fill="${shade(color,-0.3)}"/>`);
+  }
+  // simple pointed leaf
+  return svgWrap(`
+    <path d="M50 90 C36 76 30 50 50 12 C70 50 64 76 50 90 Z" fill="${color}"/>
+    <line x1="50" y1="90" x2="50" y2="18" stroke="${shade(color,-0.3)}" stroke-width="1.4"/>
+    <path d="M50 30 L38 42 M50 42 L40 52 M50 54 L42 62" stroke="${shade(color,-0.25)}" stroke-width="0.8" opacity="0.5"/>
+    <path d="M50 30 L62 42 M50 42 L60 52 M50 54 L58 62" stroke="${shade(color,-0.25)}" stroke-width="0.8" opacity="0.5"/>
+  `);
+}
+
+/* ---------------------------------------------------------------------
+   2. FLOWER CATALOG — 50+ entries with color variants
+--------------------------------------------------------------------- */
+const FLOWER_CATALOG = [
+  // Roses (6 colors)
+  {id:'rose_red', name:'Red Rose', cat:'Rose', svg:()=>makeRose('#C4243B')},
+  {id:'rose_pink', name:'Pink Rose', cat:'Rose', svg:()=>makeRose('#E8879A')},
+  {id:'rose_white', name:'White Rose', cat:'Rose', svg:()=>makeRose('#F7F3EC')},
+  {id:'rose_yellow', name:'Yellow Rose', cat:'Rose', svg:()=>makeRose('#F2C230')},
+  {id:'rose_peach', name:'Peach Rose', cat:'Rose', svg:()=>makeRose('#F2A679')},
+  {id:'rose_lavender', name:'Lavender Rose', cat:'Rose', svg:()=>makeRose('#B79FD1')},
+  {id:'rose_burgundy', name:'Burgundy Rose', cat:'Rose', svg:()=>makeRose('#6E1F35')},
+
+  // Lilies (5 colors)
+  {id:'lily_white', name:'White Lily', cat:'Lily', svg:()=>makeLily('#F9F6EE')},
+  {id:'lily_pink', name:'Pink Lily', cat:'Lily', svg:()=>makeLily('#E88CA6')},
+  {id:'lily_orange', name:'Tiger Lily', cat:'Lily', svg:()=>makeLily('#E8712B')},
+  {id:'lily_yellow', name:'Yellow Lily', cat:'Lily', svg:()=>makeLily('#F2C230')},
+  {id:'lily_red', name:'Red Lily', cat:'Lily', svg:()=>makeLily('#C4243B')},
+  {id:'calla_white', name:'White Calla Lily', cat:'Lily', svg:()=>makeCallaLily('#FBF8F2')},
+  {id:'calla_purple', name:'Purple Calla Lily', cat:'Lily', svg:()=>makeCallaLily('#7A5A9E')},
+
+  // Sunflowers (3 variants)
+  {id:'sunflower_classic', name:'Sunflower', cat:'Sunflower', svg:()=>makeSunflower('#F2C230')},
+  {id:'sunflower_deep', name:'Autumn Sunflower', cat:'Sunflower', svg:()=>makeSunflower('#E8632B','#4a2e1a')},
+  {id:'sunflower_pale', name:'Vanilla Sunflower', cat:'Sunflower', svg:()=>makeSunflower('#F5E29B')},
+
+  // Tulips (6 colors)
+  {id:'tulip_red', name:'Red Tulip', cat:'Tulip', svg:()=>makeTulip('#C4243B')},
+  {id:'tulip_pink', name:'Pink Tulip', cat:'Tulip', svg:()=>makeTulip('#E8879A')},
+  {id:'tulip_yellow', name:'Yellow Tulip', cat:'Tulip', svg:()=>makeTulip('#F2C230')},
+  {id:'tulip_white', name:'White Tulip', cat:'Tulip', svg:()=>makeTulip('#F7F3EC')},
+  {id:'tulip_purple', name:'Purple Tulip', cat:'Tulip', svg:()=>makeTulip('#7A5A9E')},
+  {id:'tulip_orange', name:'Orange Tulip', cat:'Tulip', svg:()=>makeTulip('#E8712B')},
+
+  // Carnations (5 colors)
+  {id:'carn_pink', name:'Pink Carnation', cat:'Carnation', svg:()=>makeCarnation('#E8879A')},
+  {id:'carn_red', name:'Red Carnation', cat:'Carnation', svg:()=>makeCarnation('#C4243B')},
+  {id:'carn_white', name:'White Carnation', cat:'Carnation', svg:()=>makeCarnation('#F7F3EC')},
+  {id:'carn_purple', name:'Purple Carnation', cat:'Carnation', svg:()=>makeCarnation('#8B6BB1')},
+  {id:'carn_yellow', name:'Yellow Carnation', cat:'Carnation', svg:()=>makeCarnation('#F2C230')},
+
+  // Orchids (4 colors)
+  {id:'orchid_purple', name:'Purple Orchid', cat:'Orchid', svg:()=>makeOrchid('#8B5FA8')},
+  {id:'orchid_white', name:'White Orchid', cat:'Orchid', svg:()=>makeOrchid('#F9F6EE','#F2C230')},
+  {id:'orchid_pink', name:'Pink Orchid', cat:'Orchid', svg:()=>makeOrchid('#E88CA6')},
+  {id:'orchid_yellow', name:'Yellow Orchid', cat:'Orchid', svg:()=>makeOrchid('#F2C230','#E8632B')},
+
+  // Peonies
+  {id:'peony_blush', name:'Blush Peony', cat:'Peony', svg:()=>makePeony('#F2C7CE')},
+  {id:'peony_coral', name:'Coral Peony', cat:'Peony', svg:()=>makePeony('#F2896B')},
+  {id:'peony_white', name:'White Peony', cat:'Peony', svg:()=>makePeony('#FBF8F2')},
+  {id:'peony_magenta', name:'Magenta Peony', cat:'Peony', svg:()=>makePeony('#C4406F')},
+
+  // Daisies
+  {id:'daisy_white', name:'White Daisy', cat:'Daisy', svg:()=>makeDaisy('#FBF8F2')},
+  {id:'daisy_pink', name:'Pink Daisy', cat:'Daisy', svg:()=>makeDaisy('#E8A6C1')},
+  {id:'gerbera_red', name:'Red Gerbera Daisy', cat:'Daisy', svg:()=>makeGerbera('#C4243B')},
+  {id:'gerbera_orange', name:'Orange Gerbera Daisy', cat:'Daisy', svg:()=>makeGerbera('#E8712B')},
+  {id:'gerbera_pink', name:'Pink Gerbera Daisy', cat:'Daisy', svg:()=>makeGerbera('#E8879A')},
+
+  // Ranunculus
+  {id:'ranun_coral', name:'Coral Ranunculus', cat:'Ranunculus', svg:()=>makeRanunculus('#F2896B')},
+  {id:'ranun_white', name:'White Ranunculus', cat:'Ranunculus', svg:()=>makeRanunculus('#FBF8F2')},
+  {id:'ranun_burgundy', name:'Burgundy Ranunculus', cat:'Ranunculus', svg:()=>makeRanunculus('#6E1F35')},
+
+  // Hydrangea
+  {id:'hydrangea_blue', name:'Blue Hydrangea', cat:'Hydrangea', svg:()=>makeHydrangea('#7FA6D6')},
+  {id:'hydrangea_pink', name:'Pink Hydrangea', cat:'Hydrangea', svg:()=>makeHydrangea('#E8A6C1')},
+  {id:'hydrangea_white', name:'White Hydrangea', cat:'Hydrangea', svg:()=>makeHydrangea('#F7F3EC')},
+
+  // Anemone
+  {id:'anemone_white', name:'White Anemone', cat:'Anemone', svg:()=>makeAnemone('#FBF8F2')},
+  {id:'anemone_red', name:'Red Anemone', cat:'Anemone', svg:()=>makeAnemone('#C4243B')},
+
+  // Iris
+  {id:'iris_purple', name:'Purple Iris', cat:'Iris', svg:()=>makeIris('#5E4B94')},
+  {id:'iris_blue', name:'Blue Iris', cat:'Iris', svg:()=>makeIris('#3E6FA8')},
+
+  // Chrysanthemum
+  {id:'mum_yellow', name:'Yellow Chrysanthemum', cat:'Chrysanthemum', svg:()=>makeChrysanthemum('#F2C230')},
+  {id:'mum_white', name:'White Chrysanthemum', cat:'Chrysanthemum', svg:()=>makeChrysanthemum('#FBF8F2')},
+  {id:'mum_purple', name:'Purple Chrysanthemum', cat:'Chrysanthemum', svg:()=>makeChrysanthemum('#8B6BB1')},
+
+  // Poppy
+  {id:'poppy_red', name:'Red Poppy', cat:'Poppy', svg:()=>makePoppy('#D6203A')},
+  {id:'poppy_orange', name:'Iceland Poppy', cat:'Poppy', svg:()=>makeIcelandPoppy('#F2A040')},
+
+  // Dahlia
+  {id:'dahlia_pink', name:'Pink Dahlia', cat:'Dahlia', svg:()=>makeDahlia('#E85C93')},
+  {id:'dahlia_red', name:'Red Dahlia', cat:'Dahlia', svg:()=>makeDahlia('#B8243B')},
+
+  // Others / exotic
+  {id:'freesia_white', name:'White Freesia', cat:'Other', svg:()=>makeFreesia('#FBF8F2')},
+  {id:'freesia_pink', name:'Pink Freesia', cat:'Other', svg:()=>makeFreesia('#E8A6C1')},
+  {id:'lavender', name:'Lavender Sprig', cat:'Other', svg:()=>makeLavenderSprig()},
+  {id:'alstro_orange', name:'Peruvian Lily', cat:'Other', svg:()=>makeAlstroemeria('#E8712B')},
+  {id:'protea_pink', name:'Pink Protea', cat:'Other', svg:()=>makeProtea('#E8879A')},
+  {id:'camellia_pink', name:'Pink Camellia', cat:'Other', svg:()=>makeCamellia('#E8A6C1')},
+  {id:'marigold_orange', name:'Marigold', cat:'Other', svg:()=>makeMarigold('#E8712B')},
+  {id:'cosmos_pink', name:'Cosmos', cat:'Other', svg:()=>makeCosmos('#E8A6C1')},
+  {id:'amaryllis_red', name:'Amaryllis', cat:'Other', svg:()=>makeAmaryllis('#C4243B')},
+  {id:'zinnia_orange', name:'Zinnia', cat:'Other', svg:()=>makeZinnia('#E8712B')},
+  {id:'hyacinth_purple', name:'Hyacinth', cat:'Other', svg:()=>makeHyacinth('#8B6BB1')},
+  {id:'snapdragon_pink', name:'Snapdragon', cat:'Other', svg:()=>makeSnapdragon('#E8879A')},
+  {id:'waxflower_pink', name:'Waxflower', cat:'Other', svg:()=>makeWaxflower('#E8A6C1')},
+  {id:'statice_purple', name:'Statice', cat:'Other', svg:()=>makeStatice('#8B6BB1')},
+  {id:'birdofparadise', name:'Bird of Paradise', cat:'Other', svg:()=>makeBirdOfParadise()},
+  {id:'gardenia', name:'Gardenia', cat:'Other', svg:()=>makeGardenia()},
+  {id:'sweetpea_pink', name:'Sweet Pea', cat:'Other', svg:()=>makeSweetPea('#E8A6C1')},
+  {id:'delphinium_blue', name:'Delphinium', cat:'Other', svg:()=>makeDelphinium('#5A87C7')},
+  {id:'aster_purple', name:'Aster', cat:'Other', svg:()=>makeAster('#8B6BB1')},
+  {id:'magnolia_white', name:'Magnolia', cat:'Other', svg:()=>makeMagnolia('#FBF8F2')},
+  {id:'hibiscus_red', name:'Hibiscus', cat:'Other', svg:()=>makeHibiscus('#D6203A')},
+  {id:'buttercup_yellow', name:'Buttercup', cat:'Other', svg:()=>makeButtercup('#F2C230')},
+  {id:'forgetmenot', name:'Forget-Me-Not', cat:'Other', svg:()=>makeForgetMeNot()},
+  {id:'foxglove_pink', name:'Foxglove', cat:'Other', svg:()=>makeFoxglove('#D67CA0')},
+  {id:'queenanne', name:"Queen Anne's Lace", cat:'Other', svg:()=>makeQueenAnnesLace()},
+  {id:'starofbethlehem', name:'Star of Bethlehem', cat:'Other', svg:()=>makeStarOfBethlehem()},
+  {id:'babysbreath', name:"Baby's Breath", cat:'Other', svg:()=>makeBabysBreath()},
+  {id:'wildflower_blue', name:'Blue Wildflower', cat:'Other', svg:()=>makeWildflower6('#6B9BD6')},
+  {id:'wildflower_coral', name:'Coral Wildflower', cat:'Other', svg:()=>makeWildflower6('#F2896B')},
+  {id:'wildflower_yellow', name:'Yellow Wildflower', cat:'Other', svg:()=>makeWildflower6('#F2C230')},
+  {id:'wildflower_pink', name:'Pink Wildflower', cat:'Other', svg:()=>makeWildflower6('#E8879A')},
+
+  // Extra color variants across existing species for more range
+  {id:'rose_coral', name:'Coral Rose', cat:'Rose', svg:()=>makeRose('#E85C4A')},
+  {id:'rose_black', name:'Black Baccara Rose', cat:'Rose', svg:()=>makeRose('#3A1F26')},
+  {id:'tulip_black', name:'Black Tulip', cat:'Tulip', svg:()=>makeTulip('#3A2A3E')},
+  {id:'tulip_magenta', name:'Magenta Tulip', cat:'Tulip', svg:()=>makeTulip('#C4406F')},
+  {id:'carn_coral', name:'Coral Carnation', cat:'Carnation', svg:()=>makeCarnation('#F2896B')},
+  {id:'orchid_magenta', name:'Magenta Orchid', cat:'Orchid', svg:()=>makeOrchid('#B1276B')},
+  {id:'lily_burgundy', name:'Burgundy Lily', cat:'Lily', svg:()=>makeLily('#6E1F35')},
+  {id:'sunflower_red', name:'Red Sunflower', cat:'Sunflower', svg:()=>makeSunflower('#C4402B','#3a2412')},
+  {id:'peony_burgundy', name:'Burgundy Peony', cat:'Peony', svg:()=>makePeony('#8B2E4A')},
+  {id:'daisy_yellow', name:'Yellow Daisy', cat:'Daisy', svg:()=>makeDaisy('#F5E29B')},
+  {id:'gerbera_yellow', name:'Yellow Gerbera Daisy', cat:'Daisy', svg:()=>makeGerbera('#F2C230')},
+  {id:'ranun_pink', name:'Pink Ranunculus', cat:'Ranunculus', svg:()=>makeRanunculus('#E8A6C1')},
+  {id:'hydrangea_purple', name:'Purple Hydrangea', cat:'Hydrangea', svg:()=>makeHydrangea('#8B6BB1')},
+  {id:'anemone_purple', name:'Purple Anemone', cat:'Anemone', svg:()=>makeAnemone('#8B6BB1')},
+  {id:'mum_pink', name:'Pink Chrysanthemum', cat:'Chrysanthemum', svg:()=>makeChrysanthemum('#E8A6C1')},
+  {id:'dahlia_yellow', name:'Yellow Dahlia', cat:'Dahlia', svg:()=>makeDahlia('#F2C230')},
+  {id:'dahlia_purple', name:'Purple Dahlia', cat:'Dahlia', svg:()=>makeDahlia('#8B6BB1')},
+  {id:'zinnia_pink', name:'Pink Zinnia', cat:'Other', svg:()=>makeZinnia('#E85C93')},
+  {id:'zinnia_yellow', name:'Yellow Zinnia', cat:'Other', svg:()=>makeZinnia('#F2C230')},
+  {id:'ranun_yellow', name:'Yellow Ranunculus', cat:'Ranunculus', svg:()=>makeRanunculus('#F2C230')},
+  {id:'camellia_red', name:'Red Camellia', cat:'Other', svg:()=>makeCamellia('#C4243B')},
+  {id:'poppy_pink', name:'Pink Iceland Poppy', cat:'Poppy', svg:()=>makeIcelandPoppy('#E8A6C1')},
+  {id:'freesia_yellow', name:'Yellow Freesia', cat:'Other', svg:()=>makeFreesia('#F2C230')},
+  {id:'aster_pink', name:'Pink Aster', cat:'Other', svg:()=>makeAster('#E8A6C1')},
+  {id:'cosmos_white', name:'White Cosmos', cat:'Other', svg:()=>makeCosmos('#FBF8F2')},
+  {id:'marigold_yellow', name:'Yellow Marigold', cat:'Other', svg:()=>makeMarigold('#F2C230')},
+  {id:'alstro_pink', name:'Pink Peruvian Lily', cat:'Other', svg:()=>makeAlstroemeria('#E8879A')},
+  {id:'protea_white', name:'White Protea', cat:'Other', svg:()=>makeProtea('#F7F3EC')},
+  {id:'gardenia_cream', name:'Cream Gardenia', cat:'Other', svg:()=>makeGardenia()},
+  {id:'hibiscus_pink', name:'Pink Hibiscus', cat:'Other', svg:()=>makeHibiscus('#E85C93')},
+  {id:'magnolia_pink', name:'Pink Magnolia', cat:'Other', svg:()=>makeMagnolia('#E8A6C1')},
+  {id:'hyacinth_pink', name:'Pink Hyacinth', cat:'Other', svg:()=>makeHyacinth('#E8879A')},
+  {id:'delphinium_purple', name:'Purple Delphinium', cat:'Other', svg:()=>makeDelphinium('#8B6BB1')},
+  {id:'snapdragon_yellow', name:'Yellow Snapdragon', cat:'Other', svg:()=>makeSnapdragon('#F2C230')},
+  {id:'buttercup_white', name:'White Buttercup', cat:'Other', svg:()=>makeButtercup('#F7F3EC')},
+  {id:'foxglove_purple', name:'Purple Foxglove', cat:'Other', svg:()=>makeFoxglove('#8B6BB1')},
+  {id:'iris_white', name:'White Iris', cat:'Iris', svg:()=>makeIris('#F7F3EC','#E8DDF0')},
+  {id:'amaryllis_white', name:'White Amaryllis', cat:'Other', svg:()=>makeAmaryllis('#F7F3EC')},
+  {id:'calla_pink', name:'Pink Calla Lily', cat:'Lily', svg:()=>makeCallaLily('#E8A6C1')},
+
+  // Leaves (separate small section, still added to bouquet like flowers)
+  {id:'leaf_simple', name:'Green Leaf', cat:'Leaf', svg:()=>makeLeaf('#5B8A5F','simple')},
+  {id:'leaf_dark', name:'Dark Leaf', cat:'Leaf', svg:()=>makeLeaf('#3F6B45','simple')},
+  {id:'leaf_pale', name:'Pale Sage Leaf', cat:'Leaf', svg:()=>makeLeaf('#9DBBA0','simple')},
+  {id:'leaf_burgundy', name:'Burgundy Leaf', cat:'Leaf', svg:()=>makeLeaf('#7A3F4A','simple')},
+  {id:'leaf_fern', name:'Fern Frond', cat:'Leaf', svg:()=>makeLeaf('#5B8A5F','fern')},
+  {id:'leaf_fern_dark', name:'Dark Fern Frond', cat:'Leaf', svg:()=>makeLeaf('#3F6B45','fern')},
+  {id:'leaf_eucalyptus', name:'Eucalyptus', cat:'Leaf', svg:()=>makeLeaf('#8FAE9B','eucalyptus')},
+  {id:'leaf_eucalyptus_blue', name:'Blue Eucalyptus', cat:'Leaf', svg:()=>makeLeaf('#7FA6A0','eucalyptus')},
+  {id:'leaf_seeded_euc', name:'Seeded Eucalyptus', cat:'Leaf', svg:()=>makeLeaf('#8FAE9B','seeded-eucalyptus')},
+  {id:'leaf_monstera', name:'Monstera Leaf', cat:'Leaf', svg:()=>makeLeaf('#3F7A4A','monstera')},
+  {id:'leaf_monstera_pale', name:'Pale Monstera Leaf', cat:'Leaf', svg:()=>makeLeaf('#6B9E71','monstera')},
+  {id:'leaf_palm', name:'Palm Frond', cat:'Leaf', svg:()=>makeLeaf('#3F7A4A','palm')},
+  {id:'leaf_fan_palm', name:'Fan Palm Leaf', cat:'Leaf', svg:()=>makeLeaf('#4E8F5A','fan-palm')},
+  {id:'leaf_ivy', name:'Ivy Leaf', cat:'Leaf', svg:()=>makeLeaf('#4E6E54','ivy')},
+  {id:'leaf_ivy_pale', name:'Variegated Ivy', cat:'Leaf', svg:()=>makeLeaf('#8FAE9B','ivy')},
+  {id:'leaf_olive', name:'Olive Branch', cat:'Leaf', svg:()=>makeLeaf('#8A9A6B','olive')},
+  {id:'leaf_ruscus', name:'Ruscus Sprig', cat:'Leaf', svg:()=>makeLeaf('#3F6B45','ruscus')},
+  {id:'leaf_ruscus_pale', name:'Pale Ruscus Sprig', cat:'Leaf', svg:()=>makeLeaf('#6B9E71','ruscus')},
+];
+
+/* de-dup ids just in case, and index by id */
+const FLOWER_BY_ID = {};
+FLOWER_CATALOG.forEach(f=>FLOWER_BY_ID[f.id]=f);
+
+const FLOWER_CATEGORIES = ['All','Rose','Lily','Sunflower','Tulip','Carnation','Orchid','Peony','Daisy','Ranunculus','Hydrangea','Anemone','Iris','Chrysanthemum','Poppy','Dahlia','Other','Leaf'];
+
+/* ---------------------------------------------------------------------
+   3. WRAPPER CATALOG (30+)  — rendered as a paper cone behind the stems
+--------------------------------------------------------------------- */
+function makeWrapperSwatch(baseColor, pattern='solid', accent){
+  accent = accent || shade(baseColor,-0.15);
+  let deco='';
+  if(pattern==='dots'){
+    for(let i=0;i<10;i++){
+      deco += `<circle cx="${20+(i%5)*15}" cy="${25+Math.floor(i/5)*25}" r="3" fill="${accent}" opacity="0.5"/>`;
+    }
+  } else if(pattern==='stripes'){
+    for(let i=0;i<6;i++) deco += `<rect x="${i*17}" y="0" width="7" height="100" fill="${accent}" opacity="0.35"/>`;
+  } else if(pattern==='floral'){
+    for(let i=0;i<5;i++){
+      deco += `<circle cx="${15+i*18}" cy="${30+((i%2)*35)}" r="6" fill="${accent}" opacity="0.4"/>`;
+    }
+  } else if(pattern==='kraft'){
+    deco = `<rect width="100" height="100" fill="#C9A87C"/>`;
+  }
+  return svgWrap(`<rect width="100" height="100" fill="${baseColor}"/>${deco}`);
+}
+const WRAPPER_CATALOG = [
+  {id:'wrap_kraft', name:'Rustic Kraft', color:'#C9A87C', pattern:'solid'},
+  {id:'wrap_cream', name:'Soft Cream', color:'#FBF3E4', pattern:'solid'},
+  {id:'wrap_blush', name:'Blush Pink', color:'#F5D9DF', pattern:'solid'},
+  {id:'wrap_sage', name:'Sage Green', color:'#C9D6C1', pattern:'solid'},
+  {id:'wrap_lavender', name:'Lavender Mist', color:'#DCD1EC', pattern:'solid'},
+  {id:'wrap_dustyrose', name:'Dusty Rose', color:'#D9A6AE', pattern:'solid'},
+  {id:'wrap_ivory_dot', name:'Ivory Polka Dot', color:'#FBF3E4', pattern:'dots', accent:'#D9A6AE'},
+  {id:'wrap_navy_dot', name:'Navy Polka Dot', color:'#3E4C6D', pattern:'dots', accent:'#FBF3E4'},
+  {id:'wrap_pink_dot', name:'Pink Polka Dot', color:'#F5D9DF', pattern:'dots', accent:'#B8546E'},
+  {id:'wrap_mustard_stripe', name:'Mustard Stripe', color:'#F3E3B8', pattern:'stripes', accent:'#D6A24C'},
+  {id:'wrap_terracotta_stripe', name:'Terracotta Stripe', color:'#EFC7AE', pattern:'stripes', accent:'#C4703E'},
+  {id:'wrap_mint_stripe', name:'Mint Stripe', color:'#CDE8DA', pattern:'stripes', accent:'#6BA98A'},
+  {id:'wrap_floral_pink', name:'Pink Floral Print', color:'#FBEAEE', pattern:'floral', accent:'#C25C74'},
+  {id:'wrap_floral_sage', name:'Sage Floral Print', color:'#E7EFE1', pattern:'floral', accent:'#6B8F71'},
+  {id:'wrap_burgundy', name:'Deep Burgundy', color:'#6E2438', pattern:'solid'},
+  {id:'wrap_forest', name:'Forest Green', color:'#2F4A34', pattern:'solid'},
+  {id:'wrap_midnight', name:'Midnight Blue', color:'#212B45', pattern:'solid'},
+  {id:'wrap_gold_shimmer', name:'Gold Shimmer', color:'#E9C97A', pattern:'dots', accent:'#B8860B'},
+  {id:'wrap_rosegold', name:'Rose Gold', color:'#EAC0BE', pattern:'solid'},
+  {id:'wrap_charcoal', name:'Charcoal Craft', color:'#4A4048', pattern:'solid'},
+  {id:'wrap_lilac_dot', name:'Lilac Polka Dot', color:'#E7DBF2', pattern:'dots', accent:'#8B6BB1'},
+  {id:'wrap_peach', name:'Peach Whisper', color:'#F7D9BF', pattern:'solid'},
+  {id:'wrap_babyblue', name:'Baby Blue', color:'#CDE0F2', pattern:'solid'},
+  {id:'wrap_babyblue_dot', name:'Baby Blue Dot', color:'#CDE0F2', pattern:'dots', accent:'#3E6FA8'},
+  {id:'wrap_coral_stripe', name:'Coral Stripe', color:'#F7CFC2', pattern:'stripes', accent:'#E8632B'},
+  {id:'wrap_butter', name:'Buttercream', color:'#FBF0C7', pattern:'solid'},
+  {id:'wrap_plum', name:'Plum Velvet', color:'#5B3A55', pattern:'solid'},
+  {id:'wrap_seafoam', name:'Seafoam Floral', color:'#DFF0EA', pattern:'floral', accent:'#4E8F7A'},
+  {id:'wrap_berry_dot', name:'Berry Polka Dot', color:'#F0DDE3', pattern:'dots', accent:'#8B2E4A'},
+  {id:'wrap_kraft_floral', name:'Kraft Floral Print', color:'#D9BD92', pattern:'floral', accent:'#7A5230'},
+  {id:'wrap_champagne', name:'Champagne', color:'#F3E7D3', pattern:'solid'},
+  {id:'wrap_teal_stripe', name:'Teal Stripe', color:'#C6E4E2', pattern:'stripes', accent:'#2E7A76'},
+  {id:'wrap_pastel_rainbow', name:'Pastel Rainbow Dot', color:'#FBF3E4', pattern:'dots', accent:'#E8879A'},
+];
+
+/* ---------------------------------------------------------------------
+   4. BOW CATALOG (30+)
+--------------------------------------------------------------------- */
+function makeBow(color, style='classic'){
+  const dark = shade(color,-0.25), light = shade(color,0.25);
+  if(style==='layered'){
+    return svgWrap(`
+      <ellipse cx="50" cy="50" rx="9" ry="9" fill="${dark}"/>
+      <path d="M50 50 C30 44 14 52 16 66 C18 78 34 78 46 66 C48 62 50 56 50 50 Z" fill="${light}" opacity="0.7"/>
+      <path d="M50 50 C70 44 86 52 84 66 C82 78 66 78 54 66 C52 62 50 56 50 50 Z" fill="${light}" opacity="0.7"/>
+      <path d="M50 50 C32 46 20 54 22 66 C24 76 38 75 47 65 C49 61 50 55 50 50 Z" fill="${color}"/>
+      <path d="M50 50 C68 46 80 54 78 66 C76 76 62 75 53 65 C51 61 50 55 50 50 Z" fill="${color}"/>
+      <path d="M44 58 L36 78 L46 74 Z" fill="${dark}"/>
+      <path d="M56 58 L64 78 L54 74 Z" fill="${dark}"/>
+      <circle cx="50" cy="50" r="7" fill="${color}"/>
+    `);
+  }
+  if(style==='satin'){
+    return svgWrap(`
+      <path d="M50 50 C28 40 12 46 14 62 C16 76 36 76 48 62 Z" fill="${color}"/>
+      <path d="M50 50 C72 40 88 46 86 62 C84 76 64 76 52 62 Z" fill="${light}"/>
+      <path d="M48 62 C40 66 34 70 30 78 L40 74 Z" fill="${dark}"/>
+      <path d="M52 62 C60 66 66 70 70 78 L60 74 Z" fill="${dark}"/>
+      <ellipse cx="50" cy="52" rx="8" ry="7" fill="${dark}"/>
+    `);
+  }
+  if(style==='ribbon-tail'){
+    return svgWrap(`
+      <ellipse cx="50" cy="48" rx="8" ry="8" fill="${dark}"/>
+      <path d="M50 48 C34 40 20 44 22 58 C24 70 40 68 48 56 Z" fill="${color}"/>
+      <path d="M50 48 C66 40 80 44 78 58 C76 70 60 68 52 56 Z" fill="${color}"/>
+      <path d="M44 60 C40 70 34 82 30 92" stroke="${light}" stroke-width="6" fill="none" stroke-linecap="round"/>
+      <path d="M56 60 C60 70 66 82 70 92" stroke="${light}" stroke-width="6" fill="none" stroke-linecap="round"/>
+    `);
+  }
+  // classic
+  return svgWrap(`
+    <path d="M50 50 C32 42 18 46 20 60 C22 72 38 72 48 60 Z" fill="${color}"/>
+    <path d="M50 50 C68 42 82 46 80 60 C78 72 62 72 52 60 Z" fill="${color}"/>
+    <path d="M50 50 C36 44 26 47 27 58 C28 66 40 66 47 58 Z" fill="${light}" opacity="0.7"/>
+    <path d="M50 50 C64 44 74 47 73 58 C72 66 60 66 53 58 Z" fill="${light}" opacity="0.7"/>
+    <path d="M44 60 L38 76 L47 71 Z" fill="${dark}"/>
+    <path d="M56 60 L62 76 L53 71 Z" fill="${dark}"/>
+    <ellipse cx="50" cy="52" rx="7" ry="6" fill="${dark}"/>
+  `);
+}
+const BOW_CATALOG = [
+  {id:'bow_red_classic', name:'Classic Red', color:'#C4243B', style:'classic'},
+  {id:'bow_pink_classic', name:'Classic Pink', color:'#E8879A', style:'classic'},
+  {id:'bow_white_classic', name:'Classic White', color:'#F7F3EC', style:'classic'},
+  {id:'bow_gold_classic', name:'Classic Gold', color:'#D6A24C', style:'classic'},
+  {id:'bow_ivory_satin', name:'Ivory Satin', color:'#FBF3E4', style:'satin'},
+  {id:'bow_blush_satin', name:'Blush Satin', color:'#F0C4CC', style:'satin'},
+  {id:'bow_burgundy_satin', name:'Burgundy Satin', color:'#6E2438', style:'satin'},
+  {id:'bow_sage_satin', name:'Sage Satin', color:'#A8C29B', style:'satin'},
+  {id:'bow_lavender_layered', name:'Lavender Layered', color:'#B79FD1', style:'layered'},
+  {id:'bow_peach_layered', name:'Peach Layered', color:'#F2A679', style:'layered'},
+  {id:'bow_navy_layered', name:'Navy Layered', color:'#3E4C6D', style:'layered'},
+  {id:'bow_mint_layered', name:'Mint Layered', color:'#9ED6BF', style:'layered'},
+  {id:'bow_coral_ribbon', name:'Coral Ribbon Tail', color:'#E8712B', style:'ribbon-tail'},
+  {id:'bow_teal_ribbon', name:'Teal Ribbon Tail', color:'#2E7A76', style:'ribbon-tail'},
+  {id:'bow_plum_ribbon', name:'Plum Ribbon Tail', color:'#5B3A55', style:'ribbon-tail'},
+  {id:'bow_yellow_classic', name:'Sunny Yellow', color:'#F2C230', style:'classic'},
+  {id:'bow_dustyblue_classic', name:'Dusty Blue', color:'#7FA6D6', style:'classic'},
+  {id:'bow_charcoal_satin', name:'Charcoal Satin', color:'#4A4048', style:'satin'},
+  {id:'bow_rosegold_satin', name:'Rose Gold Satin', color:'#EAC0BE', style:'satin'},
+  {id:'bow_mustard_layered', name:'Mustard Layered', color:'#C99A3A', style:'layered'},
+  {id:'bow_lilac_classic', name:'Lilac', color:'#C9AEEA', style:'classic'},
+  {id:'bow_forest_ribbon', name:'Forest Ribbon Tail', color:'#3F6B45', style:'ribbon-tail'},
+  {id:'bow_champagne_satin', name:'Champagne Satin', color:'#F3E7D3', style:'satin'},
+  {id:'bow_berry_layered', name:'Berry Layered', color:'#8B2E4A', style:'layered'},
+  {id:'bow_babypink_classic', name:'Baby Pink', color:'#F5D3DE', style:'classic'},
+  {id:'bow_babyblue_classic', name:'Baby Blue', color:'#CDE0F2', style:'classic'},
+  {id:'bow_terracotta_ribbon', name:'Terracotta Ribbon Tail', color:'#C4703E', style:'ribbon-tail'},
+  {id:'bow_cream_layered', name:'Cream Layered', color:'#F3E7D3', style:'layered'},
+  {id:'bow_maroon_classic', name:'Maroon', color:'#6E1F35', style:'classic'},
+  {id:'bow_seafoam_satin', name:'Seafoam Satin', color:'#C6E4E2', style:'satin'},
+  {id:'bow_amber_classic', name:'Amber', color:'#D6821C', style:'classic'},
+  {id:'bow_orchid_layered', name:'Orchid Layered', color:'#B15FA8', style:'layered'},
+];
+
+/* ---------------------------------------------------------------------
+   5. CARD CATALOG (20+) — each renders as a small tag card design
+--------------------------------------------------------------------- */
+/* Break a string into lines that fit approxCharsPerLine characters, wrapping on
+   word boundaries. Kept deliberately simple (monospace-ish estimate) since this
+   renders inside an SVG <text> where JS has no layout/measurement access. */
+function wrapTextLines(str, approxCharsPerLine, maxLines){
+  if(!str) return [];
+  const words = str.replace(/\r/g,'').split(/\s+/).filter(Boolean);
+  const lines = [];
+  let cur = '';
+  words.forEach(word=>{
+    const candidate = cur ? cur+' '+word : word;
+    if(candidate.length > approxCharsPerLine && cur){
+      lines.push(cur);
+      cur = word;
+    } else {
+      cur = candidate;
+    }
+  });
+  if(cur) lines.push(cur);
+  if(maxLines && lines.length > maxLines){
+    const kept = lines.slice(0, maxLines);
+    kept[maxLines-1] = kept[maxLines-1].replace(/.{0,3}$/, '') + '…';
+    return kept;
+  }
+  return lines;
+}
+function xmlEscape(str){
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+/* noteData: optional {to, note, from}. When provided, the card face shows the
+   actual message instead of the plain decorative placeholder — this is what
+   was missing before, so anything typed in the note step never appeared here. */
+function makeCardDesign(bg, accent, motif='dot', noteData=null){
+  let deco='';
+  if(motif==='dot'){ for(let i=0;i<8;i++) deco+=`<circle cx="${15+(i%4)*22}" cy="${15+Math.floor(i/4)*70}" r="2.5" fill="${accent}" opacity="0.5"/>`; }
+  else if(motif==='heart'){ deco = `<path d="M50 30 C46 22 34 22 34 32 C34 40 44 46 50 54 C56 46 66 40 66 32 C66 22 54 22 50 30 Z" fill="${accent}" opacity="0.85"/>`; }
+  else if(motif==='flower'){ deco = `<g opacity="0.8">${[0,72,144,216,288].map(a=>`<g transform="rotate(${a} 50 32)"><ellipse cx="50" cy="24" rx="4" ry="8" fill="${accent}"/></g>`).join('')}<circle cx="50" cy="32" r="3" fill="#F2C230"/></g>`; }
+  else if(motif==='leaf'){ deco = `<path d="M50 20 C40 26 36 40 50 56 C64 40 60 26 50 20 Z" fill="${accent}" opacity="0.8"/>`; }
+  else if(motif==='stripe'){ deco = `<rect x="0" y="0" width="100" height="10" fill="${accent}"/><rect x="0" y="120" width="100" height="10" fill="${accent}"/>`; }
+  else if(motif==='star'){ deco = `<path d="M50 16 L54 26 L65 26 L56 33 L59 44 L50 37 L41 44 L44 33 L35 26 L46 26 Z" fill="${accent}" opacity="0.85"/>`; }
+
+  const hasNote = noteData && (noteData.to || noteData.note || noteData.from);
+
+  if(hasNote){
+    const dark = shade(accent, -0.5);
+    let y = 30;
+    let textEls = '';
+    // small motif shrunk to a top-left corner mark so the rest of the face is free for the message
+    textEls += `<g transform="translate(10 10) scale(0.22)">${deco}</g>`;
+    if(noteData.to){
+      textEls += `<text x="10" y="${y}" font-family="Fraunces, serif" font-style="italic" font-weight="600" font-size="9" fill="${dark}">To ${xmlEscape(noteData.to)},</text>`;
+      y += 13;
+    }
+    const noteLines = noteData.note ? wrapTextLines(noteData.note, 20, 9) : ['Wishing you a beautiful day.'];
+    noteLines.forEach(line=>{
+      textEls += `<text x="10" y="${y}" font-family="Fraunces, serif" font-size="7.5" fill="${dark}">${xmlEscape(line)}</text>`;
+      y += 10.5;
+    });
+    if(noteData.from){
+      y += 4;
+      textEls += `<text x="90" y="${Math.min(y,128)}" text-anchor="end" font-family="Fraunces, serif" font-style="italic" font-weight="600" font-size="9" fill="${dark}">— ${xmlEscape(noteData.from)}</text>`;
+    }
+    return svgWrap(`<rect x="1" y="1" width="98" height="138" rx="8" fill="${bg}" stroke="${accent}" stroke-width="1.5"/>${textEls}
+      <circle cx="50" cy="6" r="3" fill="${accent}"/>
+    `, '0 0 100 140');
+  }
+
+  return svgWrap(`<rect x="1" y="1" width="98" height="138" rx="8" fill="${bg}" stroke="${accent}" stroke-width="1.5"/>${deco}
+    <line x1="14" y1="70" x2="86" y2="70" stroke="${accent}" stroke-width="1" opacity="0.4"/>
+    <line x1="14" y1="82" x2="86" y2="82" stroke="${accent}" stroke-width="1" opacity="0.4"/>
+    <line x1="14" y1="94" x2="70" y2="94" stroke="${accent}" stroke-width="1" opacity="0.4"/>
+    <circle cx="50" cy="6" r="3" fill="${accent}"/>
+  `, '0 0 100 140');
+}
+const CARD_CATALOG = [
+  {id:'card_blush_dot', name:'Blush Dots', bg:'#FBEFF2', accent:'#C25C74', motif:'dot'},
+  {id:'card_cream_flower', name:'Cream Floral', bg:'#FBF3E4', accent:'#D6A24C', motif:'flower'},
+  {id:'card_sage_leaf', name:'Sage Leaf', bg:'#EAF2E5', accent:'#4E6E54', motif:'leaf'},
+  {id:'card_white_heart', name:'Simple Heart', bg:'#FFFFFF', accent:'#E8879A', motif:'heart'},
+  {id:'card_lavender_star', name:'Lavender Stars', bg:'#F1EBFA', accent:'#8B6BB1', motif:'star'},
+  {id:'card_navy_stripe', name:'Navy Stripe', bg:'#EAEDF5', accent:'#3E4C6D', motif:'stripe'},
+  {id:'card_gold_flower', name:'Golden Bloom', bg:'#FBF3E4', accent:'#B8860B', motif:'flower'},
+  {id:'card_terracotta_dot', name:'Terracotta Dots', bg:'#FBEAE1', accent:'#C4703E', motif:'dot'},
+  {id:'card_mint_leaf', name:'Mint Leaf', bg:'#E5F4EE', accent:'#2E7A76', motif:'leaf'},
+  {id:'card_burgundy_heart', name:'Burgundy Heart', bg:'#F7EAEE', accent:'#6E2438', motif:'heart'},
+  {id:'card_babyblue_star', name:'Baby Blue Stars', bg:'#EAF2FA', accent:'#3E6FA8', motif:'star'},
+  {id:'card_peach_flower', name:'Peach Blossom', bg:'#FBEEE4', accent:'#E8712B', motif:'flower'},
+  {id:'card_plum_dot', name:'Plum Dots', bg:'#F1E9EF', accent:'#5B3A55', motif:'dot'},
+  {id:'card_yellow_stripe', name:'Sunny Stripe', bg:'#FBF6E1', accent:'#D6A24C', motif:'stripe'},
+  {id:'card_rosegold_heart', name:'Rose Gold Heart', bg:'#FBEFEE', accent:'#B8756E', motif:'heart'},
+  {id:'card_forest_leaf', name:'Forest Leaf', bg:'#E9F0E4', accent:'#2F4A34', motif:'leaf'},
+  {id:'card_coral_flower', name:'Coral Bloom', bg:'#FBEBE4', accent:'#E85C4A', motif:'flower'},
+  {id:'card_charcoal_star', name:'Charcoal Stars', bg:'#EFEDEE', accent:'#4A4048', motif:'star'},
+  {id:'card_teal_dot', name:'Teal Dots', bg:'#E6F2F1', accent:'#2E7A76', motif:'dot'},
+  {id:'card_lilac_heart', name:'Lilac Heart', bg:'#F3EEFA', accent:'#B15FA8', motif:'heart'},
+  {id:'card_kraft_stripe', name:'Kraft Stripe', bg:'#F1E4CE', accent:'#7A5230', motif:'stripe'},
+  {id:'card_berry_flower', name:'Berry Bloom', bg:'#F7EAF0', accent:'#8B2E4A', motif:'flower'},
+];
+
+/* =========================================================================
+   STATE
+   ========================================================================= */
+const state = {
+  step: 'flowers',
+  stems: [], // {uid, flowerId, x, y, scale, rot, z}
+  maxStems: 30,
+  wrapperId: null,
+  wrapperX: 50, wrapperY: 50,
+  wrapperScale: 100,
+  wrapperRot: 0,
+  bowId: null,
+  bowScale: 100,
+  bowX: 50, bowY: 22,
+  cardId: null,
+  cardNote: '', cardTo:'', cardFrom:'',
+  selectedStemUid: null,
+  selectedWrapper: false,
+  zCounter: 1,
+};
+
+const STEP_ORDER = ['flowers','arrange','wrapper','bow','card','share'];
+
+/* =========================================================================
+   PETAL AMBIENT BACKGROUND
+   ========================================================================= */
+function initPetalField(){
+  const field = document.getElementById('petalField');
+  const emojis = ['🌸','🌷','🍃','💮'];
+  for(let i=0;i<14;i++){
+    const p = document.createElement('div');
+    p.className='petal';
+    p.textContent = emojis[i%emojis.length];
+    p.style.left = (Math.random()*100)+'%';
+    p.style.fontSize = (14+Math.random()*16)+'px';
+    p.style.animationDuration = (12+Math.random()*10)+'s';
+    p.style.animationDelay = (Math.random()*10)+'s';
+    field.appendChild(p);
+  }
+}
+
+/* =========================================================================
+   MODAL / TOAST HELPERS
+   ========================================================================= */
+function showModal({emoji='🌷', title='', body='', primaryText='Okay', onPrimary=null, secondaryText=null, onSecondary=null}){
+  const overlay = document.getElementById('modalOverlay');
+  const card = document.getElementById('modalCard');
+  card.innerHTML = `
+    <span class="modal-emoji">${emoji}</span>
+    <h2>${title}</h2>
+    <p>${body}</p>
+    <div>
+      <button class="modal-btn" id="modalPrimaryBtn">${primaryText}</button>
+      ${secondaryText? `<button class="modal-btn secondary" id="modalSecondaryBtn">${secondaryText}</button>` : ''}
+    </div>
+  `;
+  overlay.classList.add('show');
+  document.getElementById('modalPrimaryBtn').onclick = ()=>{ overlay.classList.remove('show'); if(onPrimary) onPrimary(); };
+  if(secondaryText){
+    document.getElementById('modalSecondaryBtn').onclick = ()=>{ overlay.classList.remove('show'); if(onSecondary) onSecondary(); };
+  }
+}
+let toastTimer=null;
+function showToast(msg, icon='🌸'){
+  const t = document.getElementById('toast');
+  t.innerHTML = `<span>${icon}</span> ${msg}`;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>t.classList.remove('show'), 2400);
+}
+
+/* =========================================================================
+   SCREEN NAVIGATION
+   ========================================================================= */
+function goToScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+document.getElementById('clickToStart').addEventListener('click', ()=>{
+  goToScreen('builder');
+  setStep('flowers');
+  showToast('Let\'s build something beautiful!', '💐');
+});
+
+/* =========================================================================
+   STEP MANAGEMENT
+   ========================================================================= */
+function setStep(step){
+  state.step = step;
+  document.querySelectorAll('#stepsNav .step-pill').forEach(p=>{
+    p.classList.toggle('active', p.dataset.step===step);
+    const idx = STEP_ORDER.indexOf(p.dataset.step);
+    const curIdx = STEP_ORDER.indexOf(step);
+    p.classList.toggle('done', idx < curIdx);
+  });
+  ['flowers','arrange','wrapper','bow','card','share'].forEach(s=>{
+    const panel = document.getElementById('panel-'+s);
+    if(panel) panel.style.display = (s===step) ? 'block' : 'none';
+  });
+  renderBottomActions();
+  if(step==='arrange') renderArrangeList();
+  if(step==='card') syncCardInputsFromState();
+  if(step==='share'){ /* handled by nav to shareScreen */ }
+}
+
+// Keeps the To/Note/From fields showing whatever is already saved in state
+// (e.g. when the person leaves the Card step and comes back), so it's always
+// clear their writing was kept rather than silently lost.
+function syncCardInputsFromState(){
+  document.getElementById('cardTo').value = state.cardTo || '';
+  document.getElementById('cardNote').value = state.cardNote || '';
+  document.getElementById('cardFrom').value = state.cardFrom || '';
+  document.getElementById('cardCharCount').textContent = (state.cardNote || '').length;
+}
+
+document.querySelectorAll('#stepsNav .step-pill').forEach(pill=>{
+  pill.addEventListener('click', ()=> setStep(pill.dataset.step));
+});
+
+function renderBottomActions(){
+  const wrap = document.getElementById('bottomActions');
+  const idx = STEP_ORDER.indexOf(state.step);
+  let html = '';
+  if(idx>0){
+    html += `<button class="btn btn-ghost" id="backStepBtn">← Back</button>`;
+  }
+  if(state.step==='wrapper'){
+    html += `<button class="btn btn-skip" id="skipStepBtn">Skip wrapper</button>`;
+  } else if(state.step==='bow'){
+    html += `<button class="btn btn-skip" id="skipStepBtn">Skip bow</button>`;
+  } else if(state.step==='card'){
+    html += `<button class="btn btn-skip" id="skipStepBtn">Skip card</button>`;
+  }
+  if(state.step!=='share'){
+    const nextLabel = state.step==='card' ? 'Preview & Share →' : 'Next →';
+    const disabled = (state.step==='flowers' && state.stems.length===0);
+    html += `<button class="btn btn-primary" id="nextStepBtn" ${disabled?'disabled':''}>${nextLabel}</button>`;
+  }
+  wrap.innerHTML = html;
+  const backBtn = document.getElementById('backStepBtn');
+  if(backBtn) backBtn.onclick = ()=> setStep(STEP_ORDER[idx-1]);
+  const skipBtn = document.getElementById('skipStepBtn');
+  if(skipBtn) skipBtn.onclick = ()=>{
+    if(state.step==='wrapper'){ state.wrapperId=null; renderWrapperSelection(); showToast('Wrapper skipped','🎁'); }
+    if(state.step==='bow'){ state.bowId=null; renderBowSelection(); showToast('Bow skipped','🎀'); }
+    if(state.step==='card'){ state.cardId=null; renderCardSelection(); showToast('Card skipped','💌'); }
+    renderStage();
+    setStep(STEP_ORDER[idx+1]);
+  };
+  const nextBtn = document.getElementById('nextStepBtn');
+  if(nextBtn) nextBtn.onclick = ()=>{
+    if(state.step==='flowers' && state.stems.length===0){ showToast('Add at least one flower first 🌸'); return; }
+    if(state.step==='card'){ goToShareScreen(); return; }
+    setStep(STEP_ORDER[idx+1]);
+  };
+}
+
+document.getElementById('goToShareBtn').addEventListener('click', goToShareScreen);
+
+/* =========================================================================
+   FLOWER GRID (Step 1)
+   ========================================================================= */
+let currentFlowerFilter = 'All';
+function renderFlowerChips(){
+  const wrap = document.getElementById('flowerFilterChips');
+  wrap.innerHTML = FLOWER_CATEGORIES.map(c=>`<div class="chip ${c===currentFlowerFilter?'active':''}" data-cat="${c}">${c}</div>`).join('');
+  wrap.querySelectorAll('.chip').forEach(chip=>{
+    chip.addEventListener('click', ()=>{ currentFlowerFilter = chip.dataset.cat; renderFlowerChips(); renderFlowerGrid(); });
+  });
+}
+
+function countOfFlower(flowerId){
+  return state.stems.filter(s=>s.flowerId===flowerId).length;
+}
+
+function renderFlowerGrid(){
+  const grid = document.getElementById('flowerGrid');
+  const q = document.getElementById('flowerSearch').value.trim().toLowerCase();
+  let list = FLOWER_CATALOG.filter(f=> currentFlowerFilter==='All' || f.cat===currentFlowerFilter);
+  if(q) list = list.filter(f=> f.name.toLowerCase().includes(q));
+  if(list.length===0){ grid.innerHTML = `<div class="empty-state">No flowers match "${q}" 🌷</div>`; return; }
+  grid.innerHTML = list.map(f=>{
+    const count = countOfFlower(f.id);
+    return `<div class="item-card ${count>0?'selected':''}" data-id="${f.id}">
+      ${count>0?`<div class="qty-badge">${count}</div>`:''}
+      <div class="add-badge">+</div>
+      ${f.svg()}
+      <div class="item-name">${f.name}</div>
+    </div>`;
+  }).join('');
+  grid.querySelectorAll('.item-card').forEach(card=>{
+    card.addEventListener('click', ()=> addStem(card.dataset.id));
+  });
+}
+document.getElementById('flowerSearch').addEventListener('input', renderFlowerGrid);
+
+function addStem(flowerId){
+  if(state.stems.length >= state.maxStems){
+    showToast(`Max ${state.maxStems} flowers reached — remove one to add another 🌼`, '⚠️');
+    return;
+  }
+  const stage = document.getElementById('bouquetStage');
+  const angle = (Math.random()*40)-20;
+  const spreadX = 50 + (Math.random()*46-23);
+  const spreadY = 58 + (Math.random()*26-13);
+  const stem = {
+    uid: uid('stem'),
+    flowerId,
+    x: spreadX, y: spreadY,
+    scale: 100,
+    rot: angle,
+    z: state.zCounter++,
+  };
+  state.stems.push(stem);
+  renderStage();
+  renderFlowerGrid();
+  updateFlowerCountChip();
+  renderBottomActions();
+  const f = FLOWER_BY_ID[flowerId];
+  showToast(`${f.name} added!`, '🌸');
+}
+
+function removeStem(stemUid){
+  state.stems = state.stems.filter(s=>s.uid!==stemUid);
+  if(state.selectedStemUid===stemUid) state.selectedStemUid=null;
+  renderStage();
+  renderFlowerGrid();
+  updateFlowerCountChip();
+  renderArrangeList();
+  renderBottomActions();
+}
+
+function updateFlowerCountChip(){
+  document.getElementById('flowerCountChip').textContent = `${state.stems.length} / ${state.maxStems} flowers`;
+}
+
+/* =========================================================================
+   AUTO FILLER LEAVES - disabled
+   ========================================================================= */
+function generateFillerLeaves(stems) {
+  // Filler leaves disabled - returning empty array
+  return [];
+}
+
+/* =========================================================================
+   STAGE RENDERING (bouquet canvas) — used both in builder + share/receive previews
+   ========================================================================= */
+function renderStage(){
+  const stage = document.getElementById('bouquetStage');
+  const emptyMsg = document.getElementById('stageEmptyMsg');
+  // clear
+  stage.innerHTML = '';
+  if(emptyMsg) stage.appendChild(emptyMsg);
+  emptyMsg.style.display = state.stems.length===0 ? 'flex' : 'none';
+
+  // LAYER 1: wrapper base (behind stems, provides visual depth)
+  if(state.wrapperId){
+    const w = WRAPPER_CATALOG.find(x=>x.id===state.wrapperId);
+    if(w){
+      const wrapDiv = document.createElement('div');
+      wrapDiv.className='stage-wrapper-layer' + (state.selectedWrapper?' selected':'');
+      const size = 100 * (state.wrapperScale/100);
+      wrapDiv.style.cssText=`left:${state.wrapperX}%; top:${state.wrapperY}%; width:${size}%; aspect-ratio:1; transform:translate(-50%,-50%) rotate(${state.wrapperRot}deg); z-index:3;`;
+      wrapDiv.dataset.type='wrapper';
+      wrapDiv.innerHTML = renderWrapperCone(w);
+      stage.appendChild(wrapDiv);
+      attachWrapperDrag(wrapDiv);
+      wrapDiv.addEventListener('click', (e)=>{
+        e.stopPropagation();
+        state.selectedWrapper = !state.selectedWrapper;
+        state.selectedStemUid = null;
+        renderStage();
+        renderArrangeList();
+      });
+      if(state.selectedWrapper){
+        const controls = document.createElement('div');
+        controls.className='item-controls';
+        controls.style.cssText='position:absolute; top:100%; left:50%; transform:translateX(-50%); margin-top:10px;';
+        controls.innerHTML = `
+          <button data-act="smaller" title="Smaller">−</button>
+          <button data-act="bigger" title="Bigger">+</button>
+          <button data-act="rotL" title="Rotate left">↺</button>
+          <button data-act="rotR" title="Rotate right">↻</button>
+          <button data-act="del" class="remove-btn" title="Remove wrapper">✕ Remove</button>
+        `;
+        wrapDiv.appendChild(controls);
+        controls.addEventListener('click', (e)=>{
+          e.stopPropagation();
+          const act = e.target.closest('button')?.dataset.act;
+          if(!act) return;
+          if(act==='smaller') state.wrapperScale = Math.max(60, state.wrapperScale-10);
+          if(act==='bigger') state.wrapperScale = Math.min(180, state.wrapperScale+10);
+          if(act==='rotL') state.wrapperRot -= 15;
+          if(act==='rotR') state.wrapperRot += 15;
+          if(act==='del'){ state.wrapperId=null; state.selectedWrapper=false; renderWrapperSelection(); showToast('Wrapper removed','🎁'); renderStage(); return; }
+          renderStage();
+        });
+      }
+    }
+  }
+
+  // LAYER 2: visible stems (these are BEHIND wrapper in z-order, so wrapper overlap will hide them)
+  stage.insertAdjacentHTML('beforeend', buildStemLinesMarkup(state.stems));
+
+  // LAYER 3: flower heads, sorted by z
+  const sorted = [...state.stems].sort((a,b)=>a.z-b.z);
+  
+  // Generate and render filler leaves in empty spaces
+  const fillerLeaves = generateFillerLeaves(state.stems);
+  const allItems = [...sorted, ...fillerLeaves];
+  
+  allItems.forEach(stem=>{
+    const f = FLOWER_BY_ID[stem.flowerId];
+    if(!f) return;
+    const size = 90 * (stem.scale/100);
+    const el = document.createElement('div');
+    el.className = 'stage-item' + (state.selectedStemUid===stem.uid?' selected':'');
+    el.style.cssText = `left:${stem.x}%; top:${stem.y}%; width:${size}px; height:${size}px; transform:translate(-50%,-50%) rotate(${stem.rot}deg); z-index:${10+stem.z};`;
+    el.dataset.uid = stem.uid;
+    el.innerHTML = f.svg();
+    stage.appendChild(el);
+    attachDrag(el, stem);
+    el.addEventListener('click', (e)=>{
+      e.stopPropagation();
+      // Don't select filler leaves
+      if(stem.isFiller) return;
+      state.selectedStemUid = (state.selectedStemUid===stem.uid) ? null : stem.uid;
+      state.selectedWrapper = false;
+      renderStage();
+      renderArrangeList();
+    });
+    if(state.selectedStemUid===stem.uid && !stem.isFiller){
+      const controls = document.createElement('div');
+      controls.className='item-controls';
+      controls.innerHTML = `
+        <button data-act="smaller" title="Smaller">−</button>
+        <button data-act="bigger" title="Bigger">+</button>
+        <button data-act="rotL" title="Rotate left">↺</button>
+        <button data-act="rotR" title="Rotate right">↻</button>
+        <button data-act="front" title="Bring forward">⬆</button>
+        <button data-act="del" class="remove-btn" title="Remove this flower">✕ Remove</button>
+      `;
+      el.appendChild(controls);
+      controls.addEventListener('click', (e)=>{
+        e.stopPropagation();
+        const act = e.target.closest('button')?.dataset.act;
+        if(!act) return;
+        if(act==='smaller') stem.scale = Math.max(40, stem.scale-10);
+        if(act==='bigger') stem.scale = Math.min(220, stem.scale+10);
+        if(act==='rotL') stem.rot -= 15;
+        if(act==='rotR') stem.rot += 15;
+        if(act==='front') stem.z = state.zCounter++;
+        if(act==='del'){ removeStem(stem.uid); return; }
+        renderStage();
+        renderArrangeList();
+      });
+      // corner resize handle
+      const resizeHandle = document.createElement('div');
+      resizeHandle.className = 'resize-handle';
+      resizeHandle.title = 'Drag to resize';
+      resizeHandle.innerHTML = '⤡';
+      el.appendChild(resizeHandle);
+      attachResizeRotate(resizeHandle, el, stem);
+    }
+  });
+
+  // LAYER 4: wrapper OVERLAP pass (covers stems completely, hides them)
+  if(state.wrapperId){
+    const w = WRAPPER_CATALOG.find(x=>x.id===state.wrapperId);
+    if(w){
+      const overlapDiv = document.createElement('div');
+      overlapDiv.className='stage-wrapper-overlap-layer';
+      const size = 100 * (state.wrapperScale/100);
+      overlapDiv.style.cssText=`left:${state.wrapperX}%; top:${state.wrapperY}%; width:${size}%; aspect-ratio:1; transform:translate(-50%,-50%) rotate(${state.wrapperRot}deg); z-index:9; pointer-events:none;`;
+      overlapDiv.innerHTML = renderWrapperCone(w);
+      stage.appendChild(overlapDiv);
+    }
+  }
+
+  // bow (on top, near base of wrapper)
+  if(state.bowId){
+    const b = BOW_CATALOG.find(x=>x.id===state.bowId);
+    if(b){
+      const size = 70 * (state.bowScale/100);
+      const bowDiv = document.createElement('div');
+      bowDiv.className='stage-bow-layer';
+      bowDiv.style.cssText = `left:${state.bowX}%; top:${state.bowY}%; width:${size}px; height:${size}px; transform:translate(-50%,-50%); z-index:${400};`;
+      bowDiv.innerHTML = makeBow(b.color, b.style);
+      stage.appendChild(bowDiv);
+    }
+  }
+
+  // pinned card — tagged directly onto the wrapper's front face (not
+  // floating off to the side), angled like a real gift tag pinned through
+  // the paper, with the actual note text printed on it.
+  if(state.cardId){
+    const cardDiv = document.createElement('div');
+    cardDiv.className='stage-card-layer';
+    cardDiv.id = 'stageCardLayer';
+    cardDiv.style.cssText = `left:60%; top:64%; width:32%; max-width:112px; z-index:450;`;
+    cardDiv.innerHTML = buildStageCardMarkup();
+    stage.appendChild(cardDiv);
+  }
+
+  stage.onclick = ()=>{ state.selectedStemUid=null; renderStage(); renderArrangeList(); };
+}
+
+// Builds the pinned-card HTML: card face + a pushpin drawn overlapping the
+// top-left corner, plus the person's To/note/From text laid over the design
+// so what they type is visibly attached to the bouquet, not hidden until Share.
+function buildStageCardMarkup(dataSource){
+  const src = dataSource || state;
+  const c = CARD_CATALOG.find(x=>x.id===src.cardId);
+  if(!c) return '';
+  const hasText = src.cardTo || src.cardNote || src.cardFrom;
+  return `
+    <div style="position:relative; transform:rotate(-6deg); filter:drop-shadow(0 8px 14px rgba(0,0,0,0.28));">
+      <svg viewBox="0 0 26 26" style="position:absolute; top:-9px; left:14px; width:22px; height:22px; z-index:2;">
+        <circle cx="13" cy="9" r="6" fill="#D6203A"/>
+        <circle cx="11" cy="7" r="2" fill="#fff" opacity="0.55"/>
+        <line x1="13" y1="13" x2="13" y2="20" stroke="#8a8a8a" stroke-width="1.6" stroke-linecap="round"/>
+      </svg>
+      <div style="position:relative; background:transparent;">
+        ${makeCardDesign(c.bg, c.accent, c.motif)}
+        <div style="position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:14% 12% 10%; text-align:center; font-family:'Fraunces',serif; color:var(--plum); line-height:1.25; overflow:hidden;">
+          ${hasText ? `
+            ${src.cardTo ? `<div style="font-size:0.62rem; font-weight:600;">To ${escapeHtml(src.cardTo)},</div>` : ''}
+            ${src.cardNote ? `<div style="font-size:0.56rem; font-style:italic; margin-top:2px; max-height:2.6em; overflow:hidden;">${escapeHtml(src.cardNote)}</div>` : ''}
+            ${src.cardFrom ? `<div style="font-size:0.58rem; margin-top:3px;">— ${escapeHtml(src.cardFrom)}</div>` : ''}
+          ` : `<div style="font-size:0.55rem; color:#b09aa2;">Add a note in step 5</div>`}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function escapeHtml(str){
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+// Called on every keystroke in the card note/to/from fields so the pinned
+// card on the stage updates live instead of only showing text at Share time.
+function refreshStageCardFace(){
+  const layer = document.getElementById('stageCardLayer');
+  if(layer) layer.innerHTML = buildStageCardMarkup();
+}
+
+function renderWrapperCone(w){
+  // Build a triangle-shaped bouquet with ruffled/frilly edges
+  // Wide at top, points to bottom, edges have wavy frills
+  const gid = uid('cone');
+  const clipId = uid('coneclip');
+  
+  // Triangle with wavy frilly edges - creates the classic cone bouquet look with texture
+  // Bottom end is slightly rounded, not sharp
+  const CONE_PATH = 'M10 8 L190 8 Q100 148 100 154 Z';
+
+  let deco = '';
+  if(w.pattern==='dots'){
+    for(let row=0; row<8; row++){
+      for(let col=0; col<6; col++){
+        const cx = 28 + col*27;
+        const cy = 22 + row*17;
+        deco += `<circle cx="${cx}" cy="${cy}" r="5" fill="${w.accent}" opacity="0.4"/>`;
+      }
+    }
+  } else if(w.pattern==='stripes'){
+    for(let i=0;i<11;i++){
+      deco += `<rect x="${i*18}" y="0" width="9" height="160" fill="${w.accent}" opacity="0.35"/>`;
+    }
+  } else if(w.pattern==='floral'){
+    for(let i=0;i<12;i++){
+      const cx = 30 + (i%4)*38;
+      const cy = 26 + Math.floor(i/4)*40;
+      deco += `<g transform="translate(${cx} ${cy})" opacity="0.45">
+        ${[0,72,144,216,288].map(a=>`<g transform="rotate(${a})"><ellipse cx="0" cy="-6" rx="4" ry="7" fill="${w.accent}"/></g>`).join('')}
+        <circle r="2.5" fill="${shade(w.accent,0.3)}"/>
+      </g>`;
+    }
+  }
+
+  return `<svg viewBox="0 0 200 160" style="width:100%; height:100%; overflow:visible;">
+    <defs>
+      <clipPath id="${clipId}"><path d="${CONE_PATH}"/></clipPath>
+      <linearGradient id="${gid}-shade" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0%" stop-color="#000" stop-opacity="0.25"/>
+        <stop offset="15%" stop-color="#000" stop-opacity="0.05"/>
+        <stop offset="85%" stop-color="#000" stop-opacity="0.05"/>
+        <stop offset="100%" stop-color="#000" stop-opacity="0.25"/>
+      </linearGradient>
+      <linearGradient id="${gid}-sheen" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#fff" stop-opacity="0.12"/>
+        <stop offset="40%" stop-color="#fff" stop-opacity="0.02"/>
+        <stop offset="100%" stop-color="#fff" stop-opacity="0"/>
+      </linearGradient>
+    </defs>
+    <g clip-path="url(#${clipId})">
+      <rect x="0" y="0" width="200" height="160" fill="${w.color}" fill-opacity="1"/>
+      ${deco}
+      <!-- Subtle shadow shading -->
+      <rect x="0" y="0" width="200" height="160" fill="url(#${gid}-shade)"/>
+      <!-- Minimal satin sheen layer -->
+      <rect x="0" y="0" width="200" height="160" fill="url(#${gid}-sheen)"/>
+    </g>
+    <!-- Bottom seal removed - wrapper ends in natural blunt point -->
+    
+    <!-- Frilly ruffled edges on top and sides -->
+    <g opacity="0.75">
+      <!-- Top edge ruffles -->
+      ${Array.from({length: 15}, (_, i) => {
+        const x = 10 + (i/14)*180;
+        const ruffleHeight = 6 + Math.sin(i*0.8)*3;
+        return `<ellipse cx="${x}" cy="${8-ruffleHeight}" rx="8" ry="${ruffleHeight}" fill="${shade(w.color, 0.18)}" opacity="0.5"/>`;
+      }).join('')}
+      
+      <!-- Left side ruffles -->
+      ${Array.from({length: 8}, (_, i) => {
+        const y = 15 + (i/7)*130;
+        const leftX = 10 + Math.sin(i*0.6)*4;
+        const ruffleWidth = 5 + Math.cos(i*0.7)*2;
+        return `<ellipse cx="${leftX-ruffleWidth}" cy="${y}" rx="${ruffleWidth}" ry="6" fill="${shade(w.color, 0.15)}" opacity="0.4"/>`;
+      }).join('')}
+      
+      <!-- Right side ruffles -->
+      ${Array.from({length: 8}, (_, i) => {
+        const y = 15 + (i/7)*130;
+        const rightX = 190 - Math.sin(i*0.6)*4;
+        const ruffleWidth = 5 + Math.cos(i*0.7)*2;
+        return `<ellipse cx="${rightX+ruffleWidth}" cy="${y}" rx="${ruffleWidth}" ry="6" fill="${shade(w.color, 0.15)}" opacity="0.4"/>`;
+      }).join('')}
+    </g>
+    
+    <!-- Outline -->
+    <path d="${CONE_PATH}" fill="none" stroke="${shade(w.color,-0.35)}" stroke-width="2" opacity="0.6"/>
+    <!-- Subtle highlight reflection -->
+    <path d="M20 12 L100 100" stroke="#fff" stroke-width="1.5" fill="none" opacity="0.08"/>
+  </svg>`;
+}
+
+/* --- dragging --- */
+function attachDrag(el, stem){
+  let dragging=false, startX=0, startY=0, origXPercent=0, origYPercent=0;
+  const stageWrap = document.querySelector('.bouquet-stage-wrap');
+
+  function pointerDown(e){
+    // Don't drag filler leaves
+    if(stem.isFiller) return;
+    e.preventDefault();
+    dragging = true;
+    el.classList.add('dragging');
+    const point = e.touches ? e.touches[0] : e;
+    startX = point.clientX; startY = point.clientY;
+    origXPercent = stem.x; origYPercent = stem.y;
+    document.addEventListener('mousemove', pointerMove);
+    document.addEventListener('mouseup', pointerUp);
+    document.addEventListener('touchmove', pointerMove, {passive:false});
+    document.addEventListener('touchend', pointerUp);
+  }
+  function pointerMove(e){
+    if(!dragging) return;
+    e.preventDefault();
+    const point = e.touches ? e.touches[0] : e;
+    const rect = stageWrap.getBoundingClientRect();
+    const dx = point.clientX - startX;
+    const dy = point.clientY - startY;
+    const pctDx = (dx/rect.width)*100;
+    const pctDy = (dy/rect.height)*100;
+    stem.x = Math.max(2,Math.min(98, origXPercent + pctDx));
+    stem.y = Math.max(2,Math.min(98, origYPercent + pctDy));
+    el.style.left = stem.x+'%';
+    el.style.top = stem.y+'%';
+    // keep the flower's stem-line glued to the moving head instead of
+    // leaving it pointing at the old spot — this was the main thing that
+    // made rearranging feel broken, since the stick used to stay put.
+    refreshStemLines();
+  }
+  function pointerUp(){
+    dragging=false;
+    el.classList.remove('dragging');
+    document.removeEventListener('mousemove', pointerMove);
+    document.removeEventListener('mouseup', pointerUp);
+    document.removeEventListener('touchmove', pointerMove);
+    document.removeEventListener('touchend', pointerUp);
+    // full re-render on release so control positions, z-order, and the
+    // arrange list all catch up with the new spot.
+    renderStage();
+  }
+  el.addEventListener('mousedown', pointerDown);
+  el.addEventListener('touchstart', pointerDown, {passive:false});
+}
+
+// Redraws just the green stem-lines layer without a full stage re-render,
+// so dragging a flower stays smooth while its stem still tracks it live.
+function refreshStemLines(){
+  const stage = document.getElementById('bouquetStage');
+  stage.querySelectorAll('.stage-stem-layer').forEach(n=>n.remove());
+  stage.insertAdjacentHTML('afterbegin', buildStemLinesMarkup(state.stems));
+}
+
+// Wrapper dragging: allows the entire wrapper to be repositioned on stage
+function attachWrapperDrag(el){
+  let dragging=false, startX=0, startY=0, origX=0, origY=0;
+  const stageWrap = document.querySelector('.bouquet-stage-wrap');
+
+  function pointerDown(e){
+    if(e.target.closest('.item-controls')) return;
+    e.preventDefault();
+    dragging = true;
+    el.classList.add('dragging');
+    const point = e.touches ? e.touches[0] : e;
+    startX = point.clientX; startY = point.clientY;
+    origX = state.wrapperX; origY = state.wrapperY;
+    document.addEventListener('mousemove', pointerMove);
+    document.addEventListener('mouseup', pointerUp);
+    document.addEventListener('touchmove', pointerMove, {passive:false});
+    document.addEventListener('touchend', pointerUp);
+  }
+  function pointerMove(e){
+    if(!dragging) return;
+    e.preventDefault();
+    const point = e.touches ? e.touches[0] : e;
+    const rect = stageWrap.getBoundingClientRect();
+    const dx = point.clientX - startX;
+    const dy = point.clientY - startY;
+    const pctDx = (dx/rect.width)*100;
+    const pctDy = (dy/rect.height)*100;
+    state.wrapperX = Math.max(20, Math.min(80, origX + pctDx));
+    state.wrapperY = Math.max(20, Math.min(80, origY + pctDy));
+    renderStage();
+  }
+  function pointerUp(){
+    dragging = false;
+    el.classList.remove('dragging');
+    document.removeEventListener('mousemove', pointerMove);
+    document.removeEventListener('mouseup', pointerUp);
+    document.removeEventListener('touchmove', pointerMove);
+    document.removeEventListener('touchend', pointerUp);
+  }
+  el.addEventListener('mousedown', pointerDown);
+  el.addEventListener('touchstart', pointerDown, {passive:false});
+}
+
+// Drag-based resize + rotate on the corner handle: dragging away from the
+// flower's center enlarges it, dragging closer shrinks it, and dragging
+// sideways around the circle rotates it — a single natural gesture instead
+// of tapping +/− and ↺/↻ repeatedly, which people found fiddly.
+function attachResizeRotate(handle, el, stem){
+  let active=false, centerX=0, centerY=0, startDist=0, startScale=0, startAngle=0, startRot=0;
+
+  function pointerDown(e){
+    e.preventDefault();
+    e.stopPropagation();
+    active = true;
+    const rect = el.getBoundingClientRect();
+    centerX = rect.left + rect.width/2;
+    centerY = rect.top + rect.height/2;
+    const point = e.touches ? e.touches[0] : e;
+    startDist = Math.hypot(point.clientX-centerX, point.clientY-centerY) || 1;
+    startAngle = Math.atan2(point.clientY-centerY, point.clientX-centerX);
+    startScale = stem.scale;
+    startRot = stem.rot;
+    document.addEventListener('mousemove', pointerMove);
+    document.addEventListener('mouseup', pointerUp);
+    document.addEventListener('touchmove', pointerMove, {passive:false});
+    document.addEventListener('touchend', pointerUp);
+  }
+  function pointerMove(e){
+    if(!active) return;
+    e.preventDefault();
+    const point = e.touches ? e.touches[0] : e;
+    const dist = Math.hypot(point.clientX-centerX, point.clientY-centerY) || 1;
+    const angle = Math.atan2(point.clientY-centerY, point.clientX-centerX);
+    const scaleRatio = dist / startDist;
+    stem.scale = Math.max(40, Math.min(220, Math.round(startScale * scaleRatio)));
+    const angleDeltaDeg = (angle-startAngle) * (180/Math.PI);
+    stem.rot = startRot + angleDeltaDeg;
+    const size = 90 * (stem.scale/100);
+    el.style.width = size+'px';
+    el.style.height = size+'px';
+    el.style.transform = `translate(-50%,-50%) rotate(${stem.rot}deg)`;
+  }
+  function pointerUp(){
+    active=false;
+    document.removeEventListener('mousemove', pointerMove);
+    document.removeEventListener('mouseup', pointerUp);
+    document.removeEventListener('touchmove', pointerMove);
+    document.removeEventListener('touchend', pointerUp);
+    renderStage();
+    renderArrangeList();
+  }
+  handle.addEventListener('mousedown', pointerDown);
+  handle.addEventListener('touchstart', pointerDown, {passive:false});
+}
+
+/* =========================================================================
+   ARRANGE LIST (Step 2) — list view w/ same controls
+   ========================================================================= */
+function renderArrangeList(){
+  const wrap = document.getElementById('arrangeList');
+  const emptyEl = document.getElementById('arrangeEmpty');
+  if(state.stems.length===0){ wrap.innerHTML=''; emptyEl.style.display='block'; return; }
+  emptyEl.style.display='none';
+  const sorted = [...state.stems].sort((a,b)=>b.z-a.z);
+  wrap.innerHTML = `<p style="font-size:12.5px; color:#9a8891; margin:0 0 10px;">Tap a flower below to select it, then use the buttons to arrange it — or select it and drag it directly on the picture above.</p>` +
+    sorted.map(stem=>{
+    const f = FLOWER_BY_ID[stem.flowerId];
+    const sel = state.selectedStemUid===stem.uid;
+    return `<div class="arrange-row ${sel?'arrange-row-selected':''}" data-uid="${stem.uid}">
+      <div class="arrange-row-thumb">${f.svg()}</div>
+      <div class="arrange-row-name">${f.name}</div>
+      <div class="arrange-row-btns">
+        <button data-act="smaller" title="Smaller">−</button>
+        <button data-act="bigger" title="Bigger">+</button>
+        <button data-act="rotL" title="Rotate left">↺</button>
+        <button data-act="rotR" title="Rotate right">↻</button>
+        <button data-act="front" title="Bring to front">⬆</button>
+        <button data-act="del" class="arrange-remove-btn" title="Remove this flower">✕ Remove</button>
+      </div>
+    </div>`;
+  }).join('');
+  wrap.querySelectorAll('[data-uid]').forEach(row=>{
+    const stemUid = row.dataset.uid;
+    const stem = state.stems.find(s=>s.uid===stemUid);
+    row.addEventListener('click', (e)=>{
+      const btn = e.target.closest('button');
+      const act = btn ? btn.dataset.act : null;
+      if(act){
+        if(act==='smaller') stem.scale = Math.max(40, stem.scale-10);
+        if(act==='bigger') stem.scale = Math.min(220, stem.scale+10);
+        if(act==='rotL') stem.rot -= 15;
+        if(act==='rotR') stem.rot += 15;
+        if(act==='front') stem.z = state.zCounter++;
+        if(act==='del'){ removeStem(stemUid); return; }
+        renderStage(); renderArrangeList();
+      } else {
+        state.selectedStemUid = sel_toggle(stemUid);
+        renderStage(); renderArrangeList();
+      }
+    });
+  });
+}
+function sel_toggle(u){ return state.selectedStemUid===u ? null : u; }
+
+/* =========================================================================
+   WRAPPER GRID (Step 3)
+   ========================================================================= */
+function renderWrapperSelection(){
+  const grid = document.getElementById('wrapperGrid');
+  grid.innerHTML = WRAPPER_CATALOG.map(w=>`
+    <div class="swatch-card ${state.wrapperId===w.id?'selected':''}" data-id="${w.id}">
+      ${makeWrapperSwatch(w.color,w.pattern,w.accent)}
+      <div class="item-name">${w.name}</div>
+    </div>
+  `).join('');
+  grid.querySelectorAll('.swatch-card').forEach(card=>{
+    card.addEventListener('click', ()=>{
+      state.wrapperId = state.wrapperId===card.dataset.id ? null : card.dataset.id;
+      renderWrapperSelection();
+      renderStage();
+      if(state.wrapperId) showToast('Wrapper applied 🎁');
+    });
+  });
+}
+
+/* =========================================================================
+   BOW GRID (Step 4)
+   ========================================================================= */
+function renderBowSelection(){
+  const grid = document.getElementById('bowGrid');
+  grid.innerHTML = BOW_CATALOG.map(b=>`
+    <div class="swatch-card ${state.bowId===b.id?'selected':''}" data-id="${b.id}">
+      ${makeBow(b.color,b.style)}
+      <div class="item-name">${b.name}</div>
+    </div>
+  `).join('');
+  grid.querySelectorAll('.swatch-card').forEach(card=>{
+    card.addEventListener('click', ()=>{
+      state.bowId = state.bowId===card.dataset.id ? null : card.dataset.id;
+      renderBowSelection();
+      renderStage();
+      document.getElementById('bowSizeControl').style.display = state.bowId ? 'block' : 'none';
+      if(state.bowId) showToast('Bow tied on! 🎀');
+    });
+  });
+  document.getElementById('bowSizeControl').style.display = state.bowId ? 'block' : 'none';
+}
+document.getElementById('bowSizeSlider').addEventListener('input', (e)=>{
+  state.bowScale = parseInt(e.target.value);
+  renderStage();
+});
+
+/* =========================================================================
+   CARD GRID (Step 5)
+   ========================================================================= */
+function renderCardSelection(){
+  const grid = document.getElementById('cardGrid');
+  grid.innerHTML = CARD_CATALOG.map(c=>`
+    <div class="swatch-card ${state.cardId===c.id?'selected':''}" data-id="${c.id}">
+      <div style="width:48px;height:64px;margin:0 auto 4px;">${makeCardDesign(c.bg,c.accent,c.motif)}</div>
+      <div class="item-name">${c.name}</div>
+    </div>
+  `).join('');
+  grid.querySelectorAll('.swatch-card').forEach(card=>{
+    card.addEventListener('click', ()=>{
+      state.cardId = state.cardId===card.dataset.id ? null : card.dataset.id;
+      renderCardSelection();
+      renderStage();
+      if(state.cardId) showToast('Card tagged on! 💌');
+    });
+  });
+}
+document.getElementById('cardNote').addEventListener('input', (e)=>{
+  state.cardNote = e.target.value;
+  document.getElementById('cardCharCount').textContent = e.target.value.length;
+  refreshStageCardFace();
+});
+document.getElementById('cardTo').addEventListener('input', (e)=>{
+  state.cardTo = e.target.value;
+  refreshStageCardFace();
+});
+document.getElementById('cardFrom').addEventListener('input', (e)=>{
+  state.cardFrom = e.target.value;
+  refreshStageCardFace();
+});
+
+/* =========================================================================
+   SHARE SCREEN
+   ========================================================================= */
+// Shared stem-line drawer used by the live stage and both preview clones,
+// so a visible green stem always connects each flower head down to the
+// gathering point at the base of the bouquet.
+function buildStemLinesMarkup(stems){
+  const gatherX = 50, gatherY = 70; // Gather point inside wrapper, not at bottom
+  const wrapperBottomY = state.wrapperId ? 70 : 88; // If wrapper exists, stems fade into it at ~y:70
+  return [...stems].sort((a,b)=>a.z-b.z).map(stem=>{
+    const headSize = 90 * (stem.scale/100);
+    const startX = stem.x, startY = stem.y + (headSize/2/5);
+    const midX = (startX + gatherX)/2;
+    const midY = (startY + wrapperBottomY)/2;
+    
+    // Main stem from flower down to wrapper (or 70% if no wrapper)
+    let stemSvg = `<svg class="stage-stem-layer" style="position:absolute; left:0; top:0; width:100%; height:100%; z-index:6;" viewBox="0 0 100 100" preserveAspectRatio="none">
+      <path d="M${startX} ${startY} Q ${midX} ${midY} ${gatherX} ${wrapperBottomY}" stroke="#5B8A5F" stroke-width="0.9" fill="none" stroke-linecap="round" opacity="0.85"/>
+    </svg>`;
+    
+    // Small decorative stem from TOP of flower head (coming down slightly)
+    const topStemLen = headSize * 0.08;
+    const stemTopSvg = `<svg class="stage-stem-layer" style="position:absolute; left:0; top:0; width:100%; height:100%; z-index:11;" viewBox="0 0 100 100" preserveAspectRatio="none">
+      <line x1="${startX}" y1="${startY - topStemLen}" x2="${startX + (Math.random()*2-1)}" y2="${startY}" stroke="#5B8A5F" stroke-width="0.65" stroke-linecap="round" opacity="0.7"/>
+    </svg>`;
+    
+    return stemSvg + stemTopSvg;
+  }).join('');
+}
+
+function cloneStageInto(targetId){
+  // Build a fresh render (not draggable) into the given preview container
+  const target = document.getElementById(targetId);
+  target.innerHTML = '';
+  // Wrapper base layer
+  if(state.wrapperId){
+    const w = WRAPPER_CATALOG.find(x=>x.id===state.wrapperId);
+    if(w){
+      const d = document.createElement('div');
+      d.className='stage-wrapper-layer';
+      const size = 100 * (state.wrapperScale/100);
+      d.style.cssText=`position:absolute; left:${state.wrapperX}%; top:${state.wrapperY}%; width:${size}%; aspect-ratio:1; transform:translate(-50%,-50%) rotate(${state.wrapperRot}deg); z-index:5;`;
+      d.innerHTML = renderWrapperCone(w);
+      target.appendChild(d);
+    }
+  }
+  // Stems
+  target.insertAdjacentHTML('beforeend', buildStemLinesMarkup(state.stems));
+  const sorted = [...state.stems].sort((a,b)=>a.z-b.z);
+  const fillerLeaves = generateFillerLeaves(state.stems);
+  const allItems = [...sorted, ...fillerLeaves];
+  allItems.forEach(stem=>{
+    const f = FLOWER_BY_ID[stem.flowerId];
+    if(!f) return;
+    const size = 90*(stem.scale/100);
+    const el = document.createElement('div');
+    el.style.cssText = `position:absolute; left:${stem.x}%; top:${stem.y}%; width:${size}px; height:${size}px; transform:translate(-50%,-50%) rotate(${stem.rot}deg); z-index:${10+stem.z};`;
+    el.innerHTML = f.svg();
+    target.appendChild(el);
+  });
+  // Wrapper overlap (covers stems)
+  if(state.wrapperId){
+    const w = WRAPPER_CATALOG.find(x=>x.id===state.wrapperId);
+    if(w){
+      const overlapDiv = document.createElement('div');
+      overlapDiv.className='stage-wrapper-overlap-layer';
+      const size = 100 * (state.wrapperScale/100);
+      overlapDiv.style.cssText=`position:absolute; left:${state.wrapperX}%; top:${state.wrapperY}%; width:${size}%; aspect-ratio:1; transform:translate(-50%,-50%) rotate(${state.wrapperRot}deg); z-index:9; pointer-events:none;`;
+      overlapDiv.innerHTML = renderWrapperCone(w);
+      target.appendChild(overlapDiv);
+    }
+  }
+  // Bow
+  if(state.bowId){
+    const b = BOW_CATALOG.find(x=>x.id===state.bowId);
+    if(b){
+      const size = 70*(state.bowScale/100);
+      const d = document.createElement('div');
+      d.style.cssText = `position:absolute; left:${state.bowX}%; top:${state.bowY}%; width:${size}px; height:${size}px; transform:translate(-50%,-50%); z-index:400;`;
+      d.innerHTML = makeBow(b.color,b.style);
+      target.appendChild(d);
+    }
+  }
+  // Card
+  if(state.cardId){
+    const d = document.createElement('div');
+    d.style.cssText = `position:absolute; left:60%; top:64%; width:32%; max-width:112px; z-index:450;`;
+    d.innerHTML = buildStageCardMarkup();
+    target.appendChild(d);
+  }
+}
+
+
+// ---------------------------------------------------------------------
+// Sharing now works by actually SAVING the bouquet to persistent storage
+// under a short random gift ID, and putting only that short ID in the link
+// (?gift=xxxxxxxx). Cramming the whole bouquet into the URL as base64 is
+// what broke sharing before: WhatsApp/Instagram/Snapchat frequently
+// truncate long URLs, unfurl/rewrite them for previews, or drop query
+// strings, so the receiver's copy of the link often arrived with the data
+// missing or corrupted. A short ID survives all of that, because the real
+// data lives in storage, not in the link itself.
+// ---------------------------------------------------------------------
+
+function generateGiftId(){
+  return 'g' + Math.random().toString(36).slice(2,10) + Date.now().toString(36).slice(-4);
+}
+
+let currentGiftId = null;
+
+async function saveGiftAndBuildLink(){
+  const payload = {
+    stems: state.stems,
+    wrapperId: state.wrapperId,
+    bowId: state.bowId, bowScale: state.bowScale, bowX: state.bowX, bowY: state.bowY,
+    cardId: state.cardId, cardNote: state.cardNote, cardTo: state.cardTo, cardFrom: state.cardFrom,
+    createdAt: Date.now(),
+  };
+  const giftId = currentGiftId || generateGiftId();
+  currentGiftId = giftId;
+
+  if(window.storage && window.storage.set){
+    // shared=true: the RECEIVER opening this link is a different session/
+    // device than the sender, so the record must be readable by anyone,
+    // not just saved privately to the sender's own storage.
+    await window.storage.set('gift:' + giftId, JSON.stringify(payload), true);
+  }
+
+  const url = new URL(window.location.href.split('#')[0].split('?')[0]);
+  url.searchParams.set('gift', giftId);
+  return url.toString();
+}
+
+async function goToShareScreen(){
+  goToScreen('shareScreen');
+  cloneStageInto('sharePreviewStage');
+  const notePrev = document.getElementById('shareNotePreview');
+  if(state.cardId && (state.cardNote || state.cardTo || state.cardFrom)){
+    notePrev.style.display='block';
+    notePrev.innerHTML = `${state.cardTo?`<b>To ${escapeHtml(state.cardTo)},</b><br>`:''}${state.cardNote?escapeHtml(state.cardNote).replace(/\n/g,'<br>'):''}${state.cardFrom?`<br><br>— ${escapeHtml(state.cardFrom)}`:''}`;
+  } else {
+    notePrev.style.display='none';
+  }
+
+  const linkInput = document.getElementById('shareLinkInput');
+  const shareButtons = [document.getElementById('waBtn'), document.getElementById('igBtn'), document.getElementById('scBtn')];
+  linkInput.value = 'Preparing your link…';
+  shareButtons.forEach(b=> b.disabled = true);
+
+  try{
+    const link = await saveGiftAndBuildLink();
+    linkInput.value = link;
+    shareButtons.forEach(b=> b.disabled = false);
+  }catch(e){
+    console.error('Failed to save gift', e);
+    linkInput.value = '';
+    showToast("Couldn't prepare your link — please try again", '⚠️');
+  }
+}
+
+document.getElementById('copyLinkBtn').addEventListener('click', ()=>{
+  const input = document.getElementById('shareLinkInput');
+  if(!input.value || input.value==='Preparing your link…'){
+    showToast('Hang on, still preparing your link…', '⏳');
+    return;
+  }
+  input.select();
+  try{
+    navigator.clipboard.writeText(input.value);
+  }catch(e){
+    document.execCommand('copy');
+  }
+  showToast('Link copied to clipboard! 💕','📋');
+});
+
+function shareVia(platform){
+  const link = document.getElementById('shareLinkInput').value;
+  if(!link || link==='Preparing your link…'){
+    showToast('Hang on, still preparing your link…', '⏳');
+    return;
+  }
+  const text = encodeURIComponent(`🌷 I made you a bouquet on Blooms & Bows! Open your gift: ${link}`);
+  let shareUrl='';
+  if(platform==='whatsapp') shareUrl = `https://wa.me/?text=${text}`;
+  if(platform==='instagram'){
+    // Instagram has no direct web share-link API for DMs; copy link + open Instagram
+    navigator.clipboard && navigator.clipboard.writeText(link);
+    showToast('Link copied — paste it into your Instagram DM or story!','📸');
+    window.open('https://www.instagram.com/', '_blank');
+    return;
+  }
+  if(platform==='snapchat') shareUrl = `https://www.snapchat.com/scan?attachmentUrl=${encodeURIComponent(link)}`;
+  if(shareUrl) window.open(shareUrl, '_blank');
+}
+document.getElementById('waBtn').addEventListener('click', ()=>shareVia('whatsapp'));
+document.getElementById('igBtn').addEventListener('click', ()=>shareVia('instagram'));
+document.getElementById('scBtn').addEventListener('click', ()=>shareVia('snapchat'));
+
+document.getElementById('backToEditBtn').addEventListener('click', ()=>{
+  goToScreen('builder');
+  setStep('card');
+  renderStage();
+});
+
+document.getElementById('previewAsReceiverBtn').addEventListener('click', ()=>{
+  showReceiverExperience(state);
+});
+
+/* =========================================================================
+   RECEIVER EXPERIENCE
+   ========================================================================= */
+function showReceiverExperience(giftState){
+  // temporarily swap global "state" rendering target for the receive preview
+  const backup = JSON.stringify(state);
+  goToScreen('receiveScreen');
+  document.getElementById('receiveFromLine').textContent = giftState.cardFrom ? `A bouquet from ${giftState.cardFrom} 💐` : 'Someone sent you a bouquet 💐';
+  cloneStageIntoWithData('receivePreviewStage', giftState);
+  const noteBox = document.getElementById('receiveNoteBox');
+  if(giftState.cardId && (giftState.cardNote || giftState.cardTo)){
+    noteBox.style.display='block';
+    noteBox.innerHTML = `${giftState.cardTo?`<b>To ${escapeHtml(giftState.cardTo)},</b><br>`:''}${giftState.cardNote?escapeHtml(giftState.cardNote).replace(/\n/g,'<br>'):''}${giftState.cardFrom?`<br><br>— ${escapeHtml(giftState.cardFrom)}`:''}`;
+  } else {
+    noteBox.style.display='none';
+  }
+  showModal({
+    emoji:'🎁',
+    title:'You have a gift waiting for you!',
+    body:'Someone made this bouquet just for you on Blooms & Bows. Tap below to open it.',
+    primaryText:'Open my gift 🌷',
+    onPrimary: ()=>{ showToast('Enjoy your bouquet! 💕','🌷'); }
+  });
+}
+
+function cloneStageIntoWithData(targetId, data){
+  const target = document.getElementById(targetId);
+  target.innerHTML = '';
+  // Wrapper base layer
+  if(data.wrapperId){
+    const w = WRAPPER_CATALOG.find(x=>x.id===data.wrapperId);
+    if(w){
+      const d = document.createElement('div');
+      d.className='stage-wrapper-layer';
+      const size = 100 * ((data.wrapperScale||100)/100);
+      d.style.cssText=`position:absolute; left:${data.wrapperX||50}%; top:${data.wrapperY||50}%; width:${size}%; aspect-ratio:1; transform:translate(-50%,-50%) rotate(${data.wrapperRot||0}deg); z-index:5;`;
+      d.innerHTML = renderWrapperCone(w);
+      target.appendChild(d);
+    }
+  }
+  // Stems
+  target.insertAdjacentHTML('beforeend', buildStemLinesMarkup(data.stems||[]));
+  const sorted = [...(data.stems||[])].sort((a,b)=>a.z-b.z);
+  const fillerLeaves = generateFillerLeaves(data.stems||[]);
+  const allItems = [...sorted, ...fillerLeaves];
+  allItems.forEach(stem=>{
+    const f = FLOWER_BY_ID[stem.flowerId];
+    if(!f) return;
+    const size = 90*(stem.scale/100);
+    const el = document.createElement('div');
+    el.style.cssText = `position:absolute; left:${stem.x}%; top:${stem.y}%; width:${size}px; height:${size}px; transform:translate(-50%,-50%) rotate(${stem.rot}deg); z-index:${10+stem.z};`;
+    el.innerHTML = f.svg();
+    target.appendChild(el);
+  });
+  // Wrapper overlap (covers stems)
+  if(data.wrapperId){
+    const w = WRAPPER_CATALOG.find(x=>x.id===data.wrapperId);
+    if(w){
+      const overlapDiv = document.createElement('div');
+      overlapDiv.className='stage-wrapper-overlap-layer';
+      const size = 100 * ((data.wrapperScale||100)/100);
+      overlapDiv.style.cssText=`position:absolute; left:${data.wrapperX||50}%; top:${data.wrapperY||50}%; width:${size}%; aspect-ratio:1; transform:translate(-50%,-50%) rotate(${data.wrapperRot||0}deg); z-index:9; pointer-events:none;`;
+      overlapDiv.innerHTML = renderWrapperCone(w);
+      target.appendChild(overlapDiv);
+    }
+  }
+  // Bow
+  if(data.bowId){
+    const b = BOW_CATALOG.find(x=>x.id===data.bowId);
+    if(b){
+      const size = 70*(data.bowScale||100)/100;
+      const d = document.createElement('div');
+      d.style.cssText = `position:absolute; left:${data.bowX||50}%; top:${data.bowY||78}%; width:${size}px; height:${size}px; transform:translate(-50%,-50%); z-index:400;`;
+      d.innerHTML = makeBow(b.color,b.style);
+      target.appendChild(d);
+    }
+  }
+  // Card
+  if(data.cardId){
+    const d = document.createElement('div');
+    d.style.cssText = `position:absolute; left:60%; top:64%; width:32%; max-width:112px; z-index:450;`;
+    d.innerHTML = buildStageCardMarkup(data);
+    target.appendChild(d);
+  }
+}
+
+document.getElementById('makeOwnBtn').addEventListener('click', ()=>{
+  goToScreen('builder');
+  setStep('flowers');
+});
+
+/* =========================================================================
+   INITIAL LOAD — check URL for a shared gift, otherwise show landing
+   ========================================================================= */
+
+// Shows a simple full-screen loading state on the receive screen while the
+// gift record is being fetched, so the link visibly "does something" the
+// instant it opens instead of sitting blank.
+function showReceiveLoadingState(){
+  goToScreen('receiveScreen');
+  document.getElementById('receiveFromLine').textContent = 'Opening your gift…';
+  document.getElementById('receivePreviewStage').innerHTML = `
+    <div style="display:flex; align-items:center; justify-content:center; height:100%; font-size:40px; animation:sway 1.6s ease-in-out infinite;">🌷</div>
+  `;
+  document.getElementById('receiveNoteBox').style.display='none';
+}
+
+function showGiftNotFoundState(){
+  document.getElementById('receiveFromLine').textContent = 'This gift link has expired or was not found';
+  document.getElementById('receivePreviewStage').innerHTML = `
+    <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; text-align:center; color:#b09aa2; gap:6px; padding:20px;">
+      <span style="font-size:40px;">🥀</span>
+      <span style="font-size:13px;">We couldn't find this bouquet. The link may be incomplete — ask the sender to resend it.</span>
+    </div>
+  `;
+  document.getElementById('receiveNoteBox').style.display='none';
+}
+
+async function checkForSharedGift(){
+  const params = new URLSearchParams(window.location.search);
+  const giftId = params.get('gift');
+  if(!giftId) return false;
+
+  showReceiveLoadingState();
+
+  if(!window.storage || !window.storage.get){
+    console.warn('Storage API unavailable — cannot load shared gift');
+    showGiftNotFoundState();
+    return true;
+  }
+
+  try{
+    const result = await window.storage.get('gift:' + giftId, true);
+    if(!result || !result.value){
+      showGiftNotFoundState();
+      return true;
+    }
+    const decoded = JSON.parse(result.value);
+    showReceiverExperience(decoded);
+  }catch(e){
+    console.warn('Could not load gift payload', e);
+    showGiftNotFoundState();
+  }
+  return true;
+}
+
+/* =========================================================================
+   BOOT
+   ========================================================================= */
+async function boot(){
+  initPetalField();
+  renderFlowerChips();
+  renderFlowerGrid();
+  renderWrapperSelection();
+  renderBowSelection();
+  renderCardSelection();
+  updateFlowerCountChip();
+  renderStage();
+  renderBottomActions();
+
+  const hadGift = await checkForSharedGift();
+  if(!hadGift){
+    goToScreen('landing');
+    // Welcome popup as requested
+    setTimeout(()=>{
+      showModal({
+        emoji:'🌷',
+        title:'Welcome to Blooms & Bows',
+        body:'Craft a hyper-realistic bouquet, wrap it with love, and send it to someone special — they\'ll get a little surprise when they open your link.',
+        primaryText:'Let\'s begin ✨',
+      });
+    }, 400);
+  }
+}
+document.addEventListener('DOMContentLoaded', boot);
+</script>
+</body>
+</html>
