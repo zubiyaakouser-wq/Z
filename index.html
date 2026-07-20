@@ -49,6 +49,11 @@
   .landing-inner{ position:relative; z-index:2; max-width:640px; }
   .logo-mark{ font-size:64px; display:inline-block; animation:sway 3.5s ease-in-out infinite; filter:drop-shadow(0 6px 10px rgba(194,92,116,0.35)); }
   @keyframes sway{ 0%,100%{transform:rotate(-8deg);} 50%{transform:rotate(8deg);} }
+  @keyframes giftReveal{
+    0%{ opacity:0; transform:scale(0.93) translateY(16px); }
+    100%{ opacity:1; transform:scale(1) translateY(0); }
+  }
+  .gift-reveal{ animation: giftReveal .7s cubic-bezier(.34,1.56,.64,1); }
   .site-title{ font-size:clamp(42px,8vw,72px); font-weight:600; color:var(--rose-deep); margin:10px 0 0; letter-spacing:0.5px; }
   .site-tag{ font-size:15px; letter-spacing:3px; text-transform:uppercase; color:var(--moss-deep); margin-top:6px; font-weight:600; }
   .site-sub{ margin-top:22px; font-size:17px; color:#7a6470; line-height:1.6; }
@@ -258,7 +263,7 @@
   .share-preview-wrap{
     background:var(--paper); border-radius:28px; box-shadow:0 25px 60px rgba(91,58,85,0.2); padding:26px; max-width:420px; width:92%;
   }
-  .share-preview-stage{ width:100%; aspect-ratio:3/4; position:relative; margin-bottom:14px; border-radius:18px; overflow:hidden;
+  .share-preview-stage{ width:100%; aspect-ratio:3/4; position:relative; margin-bottom:14px; border-radius:18px; overflow:visible;
     background:radial-gradient(ellipse at 50% 100%, rgba(107,143,113,0.1), transparent 60%); }
   .share-note-preview{ background:var(--cream-deep); border-radius:14px; padding:14px 16px; font-family:'Fraunces',serif; font-style:italic; color:var(--plum); font-size:14.5px; text-align:left; margin-bottom:16px; line-height:1.5; }
   .share-btns{ display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin-top:6px; }
@@ -360,6 +365,12 @@
       <h2 class="section-title">Pick a wrapper 🎁</h2>
       <p class="section-desc">Choose the paper that hugs your bouquet. You can also skip this step.</p>
       <div class="wrap-grid" id="wrapperGrid"></div>
+      <div id="wrapperSizeControl" style="margin-top:16px; display:none;">
+        <label style="font-size:13px; font-weight:700; color:var(--moss-deep); display:flex; justify-content:space-between;">
+          <span>Wrapper size</span><span>🔍−&nbsp;&nbsp;🔍+</span>
+        </label>
+        <input type="range" id="wrapperSizeSlider" min="60" max="180" value="100" style="width:100%;">
+      </div>
     </div>
 
     <!-- PANEL: BOW -->
@@ -1629,8 +1640,9 @@ const state = {
   wrapperRot: 0,
   bowId: null,
   bowScale: 100,
-  bowX: 50, bowY: 22,
+  bowX: 50, bowY: 40,
   cardId: null,
+  cardX: 76, cardY: 68,
   cardNote: '', cardTo:'', cardFrom:'',
   selectedStemUid: null,
   selectedWrapper: false,
@@ -1880,7 +1892,7 @@ function renderStage(){
       const wrapDiv = document.createElement('div');
       wrapDiv.className='stage-wrapper-layer' + (state.selectedWrapper?' selected':'');
       const size = 100 * (state.wrapperScale/100);
-      wrapDiv.style.cssText=`left:${state.wrapperX}%; top:${state.wrapperY}%; width:${size}%; aspect-ratio:1; transform:translate(-50%,-50%) rotate(${state.wrapperRot}deg); z-index:3;`;
+      wrapDiv.style.cssText=`left:${state.wrapperX}%; top:${state.wrapperY}%; width:${size}%; aspect-ratio:1; transform:translate(-50%,-50%) rotate(${state.wrapperRot}deg); z-index:3; pointer-events:auto;`;
       wrapDiv.dataset.type='wrapper';
       wrapDiv.innerHTML = renderWrapperCone(w);
       stage.appendChild(wrapDiv);
@@ -1913,6 +1925,7 @@ function renderStage(){
           if(act==='rotL') state.wrapperRot -= 15;
           if(act==='rotR') state.wrapperRot += 15;
           if(act==='del'){ state.wrapperId=null; state.selectedWrapper=false; renderWrapperSelection(); showToast('Wrapper removed','🎁'); renderStage(); return; }
+          syncWrapperSizeSlider();
           renderStage();
         });
       }
@@ -1997,29 +2010,32 @@ function renderStage(){
     }
   }
 
-  // bow (on top, near base of wrapper)
+  // bow — sits at the collar where the flowers meet the wrapper, draggable
+  // just like a flower so it can be nudged into place.
   if(state.bowId){
     const b = BOW_CATALOG.find(x=>x.id===state.bowId);
     if(b){
       const size = 70 * (state.bowScale/100);
       const bowDiv = document.createElement('div');
       bowDiv.className='stage-bow-layer';
-      bowDiv.style.cssText = `left:${state.bowX}%; top:${state.bowY}%; width:${size}px; height:${size}px; transform:translate(-50%,-50%); z-index:${400};`;
+      bowDiv.style.cssText = `left:${state.bowX}%; top:${state.bowY}%; width:${size}px; height:${size}px; transform:translate(-50%,-50%); z-index:400; pointer-events:auto; cursor:grab; touch-action:none;`;
       bowDiv.innerHTML = makeBow(b.color, b.style);
       stage.appendChild(bowDiv);
+      attachBowDrag(bowDiv);
     }
   }
 
-  // pinned card — tagged directly onto the wrapper's front face (not
-  // floating off to the side), angled like a real gift tag pinned through
-  // the paper, with the actual note text printed on it.
+  // tagged card — centered directly over the wrapper's front face so it
+  // reads as tied onto the bouquet rather than floating beside it; draggable
+  // like the bow and flowers.
   if(state.cardId){
     const cardDiv = document.createElement('div');
     cardDiv.className='stage-card-layer';
     cardDiv.id = 'stageCardLayer';
-    cardDiv.style.cssText = `left:60%; top:64%; width:32%; max-width:112px; z-index:450;`;
+    cardDiv.style.cssText = `left:${state.cardX}%; top:${state.cardY}%; width:30%; max-width:106px; transform:translate(-50%,-50%); z-index:450; pointer-events:auto; cursor:grab; touch-action:none;`;
     cardDiv.innerHTML = buildStageCardMarkup();
     stage.appendChild(cardDiv);
+    attachCardDrag(cardDiv);
   }
 
   stage.onclick = ()=>{ state.selectedStemUid=null; renderStage(); renderArrangeList(); };
@@ -2035,14 +2051,17 @@ function buildStageCardMarkup(dataSource){
   const hasText = src.cardTo || src.cardNote || src.cardFrom;
   return `
     <div style="position:relative; transform:rotate(-6deg); filter:drop-shadow(0 8px 14px rgba(0,0,0,0.28));">
-      <svg viewBox="0 0 26 26" style="position:absolute; top:-9px; left:14px; width:22px; height:22px; z-index:2;">
-        <circle cx="13" cy="9" r="6" fill="#D6203A"/>
-        <circle cx="11" cy="7" r="2" fill="#fff" opacity="0.55"/>
-        <line x1="13" y1="13" x2="13" y2="20" stroke="#8a8a8a" stroke-width="1.6" stroke-linecap="round"/>
+      <!-- twine loop threaded through the tag's hole, tying it onto the bouquet
+           like a real gift tag rather than a pin stuck through the paper -->
+      <svg viewBox="0 0 40 26" style="position:absolute; top:-17px; left:3px; width:40px; height:26px; z-index:2; overflow:visible;">
+        <path d="M9 24 Q20 -6 31 24" stroke="#B8865B" stroke-width="2" fill="none" stroke-linecap="round" opacity="0.9"/>
+        <path d="M9 24 Q20 -2 31 24" stroke="#8a6640" stroke-width="0.9" fill="none" stroke-linecap="round" opacity="0.55"/>
       </svg>
       <div style="position:relative; background:transparent;">
         ${makeCardDesign(c.bg, c.accent, c.motif)}
-        <div style="position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:14% 12% 10%; text-align:center; font-family:'Fraunces',serif; color:var(--plum); line-height:1.25; overflow:hidden;">
+        <!-- the punched hole the twine passes through -->
+        <div style="position:absolute; top:7%; left:50%; width:9%; aspect-ratio:1; transform:translateX(-50%); border-radius:50%; background:radial-gradient(circle at 35% 32%, rgba(0,0,0,0.15), rgba(0,0,0,0.4)); box-shadow:inset 0 1px 2px rgba(0,0,0,0.45); z-index:2;"></div>
+        <div style="position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:22% 12% 10%; text-align:center; font-family:'Fraunces',serif; color:var(--plum); line-height:1.25; overflow:hidden;">
           ${hasText ? `
             ${src.cardTo ? `<div style="font-size:0.62rem; font-weight:600;">To ${escapeHtml(src.cardTo)},</div>` : ''}
             ${src.cardNote ? `<div style="font-size:0.56rem; font-style:italic; margin-top:2px; max-height:2.6em; overflow:hidden;">${escapeHtml(src.cardNote)}</div>` : ''}
@@ -2262,6 +2281,94 @@ function attachWrapperDrag(el){
   el.addEventListener('touchstart', pointerDown, {passive:false});
 }
 
+// Bow dragging: same pattern as the wrapper, but constrained a little less
+// since the bow is small and often needs to sit right at the wrapper's edge.
+function attachBowDrag(el){
+  let dragging=false, startX=0, startY=0, origX=0, origY=0;
+  const stageWrap = document.querySelector('.bouquet-stage-wrap');
+
+  function pointerDown(e){
+    e.preventDefault();
+    e.stopPropagation();
+    dragging = true;
+    el.classList.add('dragging');
+    const point = e.touches ? e.touches[0] : e;
+    startX = point.clientX; startY = point.clientY;
+    origX = state.bowX; origY = state.bowY;
+    document.addEventListener('mousemove', pointerMove);
+    document.addEventListener('mouseup', pointerUp);
+    document.addEventListener('touchmove', pointerMove, {passive:false});
+    document.addEventListener('touchend', pointerUp);
+  }
+  function pointerMove(e){
+    if(!dragging) return;
+    e.preventDefault();
+    const point = e.touches ? e.touches[0] : e;
+    const rect = stageWrap.getBoundingClientRect();
+    const dx = point.clientX - startX;
+    const dy = point.clientY - startY;
+    const pctDx = (dx/rect.width)*100;
+    const pctDy = (dy/rect.height)*100;
+    state.bowX = Math.max(5, Math.min(95, origX + pctDx));
+    state.bowY = Math.max(5, Math.min(95, origY + pctDy));
+    renderStage();
+  }
+  function pointerUp(){
+    dragging = false;
+    el.classList.remove('dragging');
+    document.removeEventListener('mousemove', pointerMove);
+    document.removeEventListener('mouseup', pointerUp);
+    document.removeEventListener('touchmove', pointerMove);
+    document.removeEventListener('touchend', pointerUp);
+  }
+  el.addEventListener('mousedown', pointerDown);
+  el.addEventListener('touchstart', pointerDown, {passive:false});
+}
+
+// Card dragging: same pattern again, so the tag can be nudged to sit exactly
+// where it looks tied onto the wrapper.
+function attachCardDrag(el){
+  let dragging=false, startX=0, startY=0, origX=0, origY=0;
+  const stageWrap = document.querySelector('.bouquet-stage-wrap');
+
+  function pointerDown(e){
+    e.preventDefault();
+    e.stopPropagation();
+    dragging = true;
+    el.classList.add('dragging');
+    const point = e.touches ? e.touches[0] : e;
+    startX = point.clientX; startY = point.clientY;
+    origX = state.cardX; origY = state.cardY;
+    document.addEventListener('mousemove', pointerMove);
+    document.addEventListener('mouseup', pointerUp);
+    document.addEventListener('touchmove', pointerMove, {passive:false});
+    document.addEventListener('touchend', pointerUp);
+  }
+  function pointerMove(e){
+    if(!dragging) return;
+    e.preventDefault();
+    const point = e.touches ? e.touches[0] : e;
+    const rect = stageWrap.getBoundingClientRect();
+    const dx = point.clientX - startX;
+    const dy = point.clientY - startY;
+    const pctDx = (dx/rect.width)*100;
+    const pctDy = (dy/rect.height)*100;
+    state.cardX = Math.max(5, Math.min(95, origX + pctDx));
+    state.cardY = Math.max(5, Math.min(95, origY + pctDy));
+    renderStage();
+  }
+  function pointerUp(){
+    dragging = false;
+    el.classList.remove('dragging');
+    document.removeEventListener('mousemove', pointerMove);
+    document.removeEventListener('mouseup', pointerUp);
+    document.removeEventListener('touchmove', pointerMove);
+    document.removeEventListener('touchend', pointerUp);
+  }
+  el.addEventListener('mousedown', pointerDown);
+  el.addEventListener('touchstart', pointerDown, {passive:false});
+}
+
 // Drag-based resize + rotate on the corner handle: dragging away from the
 // flower's center enlarges it, dragging closer shrinks it, and dragging
 // sideways around the circle rotates it — a single natural gesture instead
@@ -2382,6 +2489,16 @@ function renderWrapperSelection(){
       if(state.wrapperId) showToast('Wrapper applied 🎁');
     });
   });
+  syncWrapperSizeSlider();
+}
+// Keeps the panel's zoom slider in step with state.wrapperScale, whether the
+// scale changed from the slider itself or from the +/- buttons on the stage.
+function syncWrapperSizeSlider(){
+  const ctrl = document.getElementById('wrapperSizeControl');
+  const slider = document.getElementById('wrapperSizeSlider');
+  if(!ctrl || !slider) return;
+  ctrl.style.display = state.wrapperId ? 'block' : 'none';
+  slider.value = state.wrapperScale;
 }
 
 /* =========================================================================
@@ -2408,6 +2525,10 @@ function renderBowSelection(){
 }
 document.getElementById('bowSizeSlider').addEventListener('input', (e)=>{
   state.bowScale = parseInt(e.target.value);
+  renderStage();
+});
+document.getElementById('wrapperSizeSlider').addEventListener('input', (e)=>{
+  state.wrapperScale = parseInt(e.target.value);
   renderStage();
 });
 
@@ -2462,13 +2583,13 @@ function buildStemLinesMarkup(stems){
     
     // Main stem from flower down to wrapper (or 70% if no wrapper)
     let stemSvg = `<svg class="stage-stem-layer" style="position:absolute; left:0; top:0; width:100%; height:100%; z-index:6;" viewBox="0 0 100 100" preserveAspectRatio="none">
-      <path d="M${startX} ${startY} Q ${midX} ${midY} ${gatherX} ${wrapperBottomY}" stroke="#5B8A5F" stroke-width="0.9" fill="none" stroke-linecap="round" opacity="0.85"/>
+      <path d="M${startX} ${startY} Q ${midX} ${midY} ${gatherX} ${wrapperBottomY}" stroke="#5B8A5F" stroke-width="0.9" fill="none" stroke-linecap="round" opacity="0.4"/>
     </svg>`;
     
     // Small decorative stem from TOP of flower head (coming down slightly)
     const topStemLen = headSize * 0.08;
     const stemTopSvg = `<svg class="stage-stem-layer" style="position:absolute; left:0; top:0; width:100%; height:100%; z-index:11;" viewBox="0 0 100 100" preserveAspectRatio="none">
-      <line x1="${startX}" y1="${startY - topStemLen}" x2="${startX + (Math.random()*2-1)}" y2="${startY}" stroke="#5B8A5F" stroke-width="0.65" stroke-linecap="round" opacity="0.7"/>
+      <line x1="${startX}" y1="${startY - topStemLen}" x2="${startX + (Math.random()*2-1)}" y2="${startY}" stroke="#5B8A5F" stroke-width="0.65" stroke-linecap="round" opacity="0.35"/>
     </svg>`;
     
     return stemSvg + stemTopSvg;
@@ -2531,7 +2652,7 @@ function cloneStageInto(targetId){
   // Card
   if(state.cardId){
     const d = document.createElement('div');
-    d.style.cssText = `position:absolute; left:60%; top:64%; width:32%; max-width:112px; z-index:450;`;
+    d.style.cssText = `position:absolute; left:${state.cardX}%; top:${state.cardY}%; width:30%; max-width:106px; transform:translate(-50%,-50%); z-index:450;`;
     d.innerHTML = buildStageCardMarkup();
     target.appendChild(d);
   }
@@ -2559,8 +2680,9 @@ async function saveGiftAndBuildLink(){
   const payload = {
     stems: state.stems,
     wrapperId: state.wrapperId,
+    wrapperX: state.wrapperX, wrapperY: state.wrapperY, wrapperScale: state.wrapperScale, wrapperRot: state.wrapperRot,
     bowId: state.bowId, bowScale: state.bowScale, bowX: state.bowX, bowY: state.bowY,
-    cardId: state.cardId, cardNote: state.cardNote, cardTo: state.cardTo, cardFrom: state.cardFrom,
+    cardId: state.cardId, cardX: state.cardX, cardY: state.cardY, cardNote: state.cardNote, cardTo: state.cardTo, cardFrom: state.cardFrom,
     createdAt: Date.now(),
   };
   const giftId = currentGiftId || generateGiftId();
@@ -2652,9 +2774,8 @@ document.getElementById('previewAsReceiverBtn').addEventListener('click', ()=>{
 /* =========================================================================
    RECEIVER EXPERIENCE
    ========================================================================= */
-function showReceiverExperience(giftState){
-  // temporarily swap global "state" rendering target for the receive preview
-  const backup = JSON.stringify(state);
+function showReceiverExperience(giftState, opts={}){
+  const { isDirectOpen=false } = opts;
   goToScreen('receiveScreen');
   document.getElementById('receiveFromLine').textContent = giftState.cardFrom ? `A bouquet from ${giftState.cardFrom} 💐` : 'Someone sent you a bouquet 💐';
   cloneStageIntoWithData('receivePreviewStage', giftState);
@@ -2665,13 +2786,30 @@ function showReceiverExperience(giftState){
   } else {
     noteBox.style.display='none';
   }
-  showModal({
-    emoji:'🎁',
-    title:'You have a gift waiting for you!',
-    body:'Someone made this bouquet just for you on Blooms & Bows. Tap below to open it.',
-    primaryText:'Open my gift 🌷',
-    onPrimary: ()=>{ showToast('Enjoy your bouquet! 💕','🌷'); }
-  });
+  // Fade/scale the whole card smoothly into view instead of snapping in —
+  // restart the animation cleanly by removing then re-adding the class after
+  // a reflow.
+  const card = document.querySelector('#receiveScreen .receive-card');
+  if(card){
+    card.classList.remove('gift-reveal');
+    void card.offsetWidth;
+    card.classList.add('gift-reveal');
+  }
+  if(isDirectOpen){
+    // They already opened a real gift link — the bouquet fading smoothly
+    // into view IS the reveal, so a blocking "tap to open" modal on top of
+    // it would just be a redundant extra step.
+    showToast('Your bouquet has arrived! 💐','🎁');
+  } else {
+    // Sender testing "See receiver view" — keep the fun preview modal here.
+    showModal({
+      emoji:'🎁',
+      title:'You have a gift waiting for you!',
+      body:'Someone made this bouquet just for you on Blooms & Bows. Tap below to open it.',
+      primaryText:'Open my gift 🌷',
+      onPrimary: ()=>{ showToast('Enjoy your bouquet! 💕','🌷'); }
+    });
+  }
 }
 
 function cloneStageIntoWithData(targetId, data){
@@ -2721,7 +2859,7 @@ function cloneStageIntoWithData(targetId, data){
     if(b){
       const size = 70*(data.bowScale||100)/100;
       const d = document.createElement('div');
-      d.style.cssText = `position:absolute; left:${data.bowX||50}%; top:${data.bowY||78}%; width:${size}px; height:${size}px; transform:translate(-50%,-50%); z-index:400;`;
+      d.style.cssText = `position:absolute; left:${data.bowX||50}%; top:${data.bowY||40}%; width:${size}px; height:${size}px; transform:translate(-50%,-50%); z-index:400;`;
       d.innerHTML = makeBow(b.color,b.style);
       target.appendChild(d);
     }
@@ -2729,7 +2867,7 @@ function cloneStageIntoWithData(targetId, data){
   // Card
   if(data.cardId){
     const d = document.createElement('div');
-    d.style.cssText = `position:absolute; left:60%; top:64%; width:32%; max-width:112px; z-index:450;`;
+    d.style.cssText = `position:absolute; left:${data.cardX||76}%; top:${data.cardY||68}%; width:30%; max-width:106px; transform:translate(-50%,-50%); z-index:450;`;
     d.innerHTML = buildStageCardMarkup(data);
     target.appendChild(d);
   }
@@ -2784,7 +2922,7 @@ try{
     }
 
     const decoded = snap.data();
-    showReceiverExperience(decoded);
+    showReceiverExperience(decoded, { isDirectOpen:true });
 
 }catch(e){
     console.error("Error loading bouquet:", e);
