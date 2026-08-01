@@ -299,6 +299,59 @@
     position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; color:#c9b6bd; text-align:center; pointer-events:none;
   }
   .stage-empty span{ font-size:44px; margin-bottom:8px; }
+
+  body.theme-friendship{ background: radial-gradient(circle at 15% 10%, #FFF4C2 0%, transparent 45%), radial-gradient(circle at 85% 90%, #DDF4FF 0%, transparent 45%), var(--cream); }
+  body.theme-love{ background: radial-gradient(circle at 15% 10%, #FFE7EF 0%, transparent 45%), radial-gradient(circle at 85% 90%, #F6E7FF 0%, transparent 45%), var(--cream); }
+  body.theme-friendship .topbar{ border-color: rgba(242,194,48,0.2); }
+  body.theme-love .topbar{ border-color: rgba(232,135,154,0.2); }
+  body.theme-friendship .btn-primary{ box-shadow: 0 10px 24px rgba(242,194,48,0.26); }
+  body.theme-love .btn-primary{ box-shadow: 0 10px 24px rgba(232,135,154,0.26); }
+  body.theme-friendship .bouquet-stage-wrap{ box-shadow: inset 0 0 0 1px rgba(242,194,48,0.24), 0 22px 50px rgba(242,194,48,0.14); }
+  body.theme-love .bouquet-stage-wrap{ box-shadow: inset 0 0 0 1px rgba(232,135,154,0.24), 0 22px 50px rgba(232,135,154,0.14); }
+
+  .theme-shell{ width:min(100%, 1100px); padding:24px; display:flex; align-items:center; justify-content:center; min-height:100vh; }
+  .theme-hero{ width:100%; padding:34px; border-radius:34px; background:rgba(255,255,255,0.78); backdrop-filter:blur(16px); box-shadow:0 24px 70px rgba(91,58,85,0.15); text-align:center; position:relative; overflow:hidden; }
+  .theme-hero::before{ content:''; position:absolute; inset:-20% 10% auto; height:220px; background:radial-gradient(circle, rgba(232,135,154,0.18), transparent 70%); filter:blur(20px); animation: breathe 4.5s ease-in-out infinite; }
+  .theme-bubble{ width:78px; height:78px; border-radius:50%; margin:0 auto 10px; display:grid; place-items:center; font-size:34px; box-shadow:inset 0 -10px 24px rgba(255,255,255,0.25), 0 16px 30px rgba(232,135,154,0.16); background:linear-gradient(135deg, #fff7d6, #ffd8e6); }
+  .theme-hero h2{ margin:10px 0 6px; color:var(--rose-deep); font-size:clamp(28px,4vw,40px); }
+  .theme-hero p{ margin:0 auto 22px; color:#7a6470; max-width:620px; line-height:1.7; }
+  .theme-options{ display:grid; grid-template-columns:repeat(2, minmax(240px, 1fr)); gap:18px; margin-top:20px; }
+  .theme-card{ background:linear-gradient(145deg, #fff, #fff7f8); border:1.5px solid rgba(194,92,116,0.14); border-radius:24px; padding:20px; text-align:left; position:relative; transition:transform .25s ease, box-shadow .25s ease, border-color .25s ease; cursor:pointer; }
+  .theme-card:hover{ transform:translateY(-4px); box-shadow:0 18px 32px rgba(91,58,85,0.12); }
+  .theme-card.selected{ border-color:var(--rose-deep); box-shadow:0 18px 40px rgba(194,92,116,0.16); transform:translateY(-4px); }
+  .theme-emoji{ font-size:26px; display:inline-flex; padding:12px; border-radius:16px; background:linear-gradient(135deg, rgba(242,194,48,0.2), rgba(232,135,154,0.2)); }
+  .theme-card h3{ margin:12px 0 6px; color:var(--rose-deep); font-size:22px; }
+  .theme-card p{ margin:0 0 14px; color:#7a6470; font-size:14px; line-height:1.6; }
+  .theme-messages{ display:flex; flex-wrap:wrap; gap:8px; margin-top:10px; }
+  .theme-messages span{ background:var(--cream-deep); color:var(--plum); padding:8px 10px; border-radius:999px; font-size:12.4px; font-weight:700; }
+  .theme-visual{ margin-top:16px; min-height:90px; border-radius:18px; position:relative; overflow:hidden; background:linear-gradient(120deg, rgba(242,194,48,0.14), rgba(232,135,154,0.16)); }
+  .theme-visual::before{ content:'✿'; position:absolute; inset:auto 18px 12px auto; font-size:26px; opacity:0.7; animation: drift 3s ease-in-out infinite; }
+  .theme-visual-friendship::after{ content:'💛'; position:absolute; left:18px; top:16px; font-size:30px; }
+  .theme-visual-love::after{ content:'❤️'; position:absolute; left:18px; top:16px; font-size:30px; }
+  .theme-actions{ display:flex; justify-content:center; gap:10px; flex-wrap:wrap; margin-top:24px; }
+  .theme-message-card{ background:linear-gradient(135deg, rgba(255,247,213,0.7), rgba(255,238,245,0.75)); border:1px solid rgba(194,92,116,0.16); border-radius:16px; padding:12px 14px; margin-top:12px; color:var(--plum); font-size:14px; font-weight:700; }
+  .music-panel, .photo-picker{ margin-top:16px; background:var(--cream); border:1px solid #f0dfe3; border-radius:18px; padding:14px; }
+  .music-panel label, .photo-picker label{ display:block; font-size:13px; font-weight:700; color:var(--moss-deep); margin-bottom:8px; }
+  .music-panel input, .photo-picker input{ width:100%; padding:10px 12px; border-radius:12px; border:1.5px solid #f0dfe3; font:inherit; background:#fff; }
+  .spotify-frame{ margin-top:10px; border-radius:16px; overflow:hidden; min-height:100px; }
+  .spotify-frame iframe{ width:100%; height:110px; border:0; }
+  .music-controls{ display:flex; gap:8px; margin-top:8px; }
+  .music-controls button{ padding:8px 12px; border-radius:999px; font-size:12px; font-weight:700; }
+  .photo-preview{ margin-top:10px; min-height:120px; border-radius:16px; border:1.5px dashed #e9d3dc; display:grid; place-items:center; padding:10px; background:linear-gradient(135deg, rgba(255,255,255,0.8), rgba(255,240,245,0.7)); }
+  .photo-preview img{ width:100%; max-width:180px; max-height:180px; object-fit:cover; border-radius:16px; box-shadow:0 10px 24px rgba(91,58,85,0.15); }
+  .photo-preview .empty-state{ padding:16px 10px; }
+  .photo-tag-card{ display:grid; place-items:center; padding:8px; border-radius:18px; background:linear-gradient(135deg, #fff, #fdf1f6); box-shadow:0 12px 24px rgba(91,58,85,0.16); position:relative; }
+  .photo-tag-card::after{ content:''; position:absolute; inset:8px auto auto 50%; width:32px; height:32px; border-radius:50%; background:var(--rose-deep); transform:translateX(-50%); opacity:0.85; }
+  .stage-photo-layer{ pointer-events:none; }
+  .stage-photo-layer .photo-tag-card{ width:100%; height:100%; padding:6px; }
+  .stage-photo-layer img{ width:100%; height:100%; object-fit:cover; border-radius:12px; }
+  .share-music-preview{ margin-bottom:12px; border-radius:16px; overflow:hidden; }
+  .share-music-preview iframe{ width:100%; min-height:96px; border:0; }
+  .receive-music{ margin-top:12px; border-radius:16px; overflow:hidden; }
+  .receive-music iframe{ width:100%; min-height:96px; border:0; }
+
+  @keyframes breathe{ 0%,100%{ transform:translateY(0) scale(1); opacity:0.8; } 50%{ transform:translateY(-8px) scale(1.03); opacity:1; } }
+  @keyframes drift{ 0%,100%{ transform:translateY(0) rotate(0deg); } 50%{ transform:translateY(-4px) rotate(6deg); } }
 </style>
 </head>
 <body>
@@ -313,6 +366,22 @@
     <div class="site-tag">by Tanu Javali</div>
     <p class="site-sub">Design a one-of-a-kind bouquet, wrap it just how you like, tuck in a handwritten note, and send it to someone you love — with a link that unwraps like a real gift.</p>
     <button class="start-btn" id="clickToStart">✨ Click to Start</button>
+  </div>
+</section>
+
+<!-- ============ THEME SCREEN ============ -->
+<section class="screen" id="themeScreen">
+  <div class="theme-shell">
+    <div class="theme-hero">
+      <div class="theme-bubble">💐</div>
+      <h2>Choose your bouquet mood</h2>
+      <p>Pick a signature theme, then build a bouquet that feels personal, charming, and ready to share with a little extra sparkle.</p>
+      <div class="theme-options" id="themeOptions"></div>
+      <div class="theme-actions">
+        <button class="btn btn-ghost" id="themeBackBtn">← Back</button>
+        <button class="btn btn-primary" id="themeContinueBtn">Continue to design →</button>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -363,7 +432,7 @@
     <!-- PANEL: WRAPPER -->
     <div class="panel" id="panel-wrapper" style="display:none;">
       <h2 class="section-title">Pick a wrapper 🎁</h2>
-      <p class="section-desc">Choose the paper that hugs your bouquet. You can also skip this step.</p>
+      <p class="section-desc">Choose the paper that hugs your bouquet. Resize it with the slider below, and it will stay fixed in place.</p>
       <div class="wrap-grid" id="wrapperGrid"></div>
       <div id="wrapperSizeControl" style="margin-top:16px; display:none;">
         <label style="font-size:13px; font-weight:700; color:var(--moss-deep); display:flex; justify-content:space-between;">
@@ -376,11 +445,17 @@
     <!-- PANEL: BOW -->
     <div class="panel" id="panel-bow" style="display:none;">
       <h2 class="section-title">Add a bow 🎀</h2>
-      <p class="section-desc">A little bow ties the whole look together. Drag it on the stage to reposition, resize with the slider.</p>
+      <p class="section-desc">A little bow ties the whole look together. Resize it with the slider below, and keep it fixed in place.</p>
       <div class="wrap-grid" id="bowGrid"></div>
       <div id="bowSizeControl" style="margin-top:16px; display:none;">
-        <label style="font-size:13px; font-weight:700; color:var(--moss-deep);">Bow size</label>
-        <input type="range" id="bowSizeSlider" min="60" max="160" value="100" style="width:100%;">
+        <label style="font-size:13px; font-weight:700; color:var(--moss-deep); display:flex; justify-content:space-between; align-items:center; gap:8px;">
+          <span>Bow size</span>
+          <span style="display:flex; gap:6px;">
+            <button type="button" id="bowSizeDecreaseBtn" style="width:28px; height:28px; border-radius:50%; background:var(--cream-deep); color:var(--rose-deep); font-weight:800;">−</button>
+            <button type="button" id="bowSizeIncreaseBtn" style="width:28px; height:28px; border-radius:50%; background:var(--cream-deep); color:var(--rose-deep); font-weight:800;">+</button>
+          </span>
+        </label>
+        <input type="range" id="bowSizeSlider" min="60" max="260" value="100" style="width:100%; margin-top:8px;">
       </div>
     </div>
 
@@ -395,6 +470,21 @@
         <textarea id="cardNote" maxlength="220" placeholder="Write something sweet…"></textarea>
         <div class="char-count"><span id="cardCharCount">0</span>/220</div>
         <input type="text" id="cardFrom" placeholder="From: (e.g. Tanu)" style="margin-top:4px;">
+      </div>
+      <div class="music-panel">
+        <label for="musicUrlInput">Add a song from Spotify</label>
+        <input id="musicUrlInput" type="url" placeholder="Paste a Spotify song link" />
+        <div class="music-controls">
+          <button type="button" class="btn btn-ghost" id="musicToggleBtn">Pause song</button>
+        </div>
+        <div class="spotify-frame" id="spotifyFrame"></div>
+      </div>
+      <div class="photo-picker">
+        <label for="photoInput">Add one picture to the bouquet</label>
+        <input id="photoInput" type="file" accept="image/*" />
+        <div class="photo-preview" id="photoPreview">
+          <div class="empty-state">Choose an image from your gallery to attach.</div>
+        </div>
       </div>
     </div>
 
@@ -415,6 +505,7 @@
     <h2 style="color:var(--rose-deep); margin-top:0;">Your bouquet is ready! 🌷</h2>
     <div class="share-preview-stage" id="sharePreviewStage"></div>
     <div class="share-note-preview" id="shareNotePreview" style="display:none;"></div>
+    <div class="share-music-preview" id="shareMusicPreview"></div>
     <div class="link-row">
       <input type="text" id="shareLinkInput" readonly value="">
       <button class="copy-btn" id="copyLinkBtn">Copy</button>
@@ -437,6 +528,7 @@
     <div class="from-line" id="receiveFromLine">A gift for you</div>
     <div class="share-preview-stage" id="receivePreviewStage"></div>
     <div class="receive-note" id="receiveNoteBox" style="display:none;"></div>
+    <div class="receive-music" id="receiveMusicPreview"></div>
     <button class="btn btn-primary" style="margin-top:20px;" id="makeOwnBtn">Make my own bouquet 🌷</button>
   </div>
 </section>
@@ -1194,6 +1286,119 @@ function makeLeaf(color='#5B8A5F', variant='simple'){
   `);
 }
 
+/* --- Bluebell (single bell bloom on a spike) --- */
+function makeBluebell(color){
+  const dark = shade(color,-0.2);
+  return svgWrap(`
+    <path d="M50 18 C46 30 44 44 46 60 C48 70 52 70 54 60 C56 44 54 30 50 18 Z" fill="${color}"/>
+    <path d="M50 28 C45 30 43 39 44 48 C45 54 49 53 50 53 C51 53 55 54 56 48 C57 39 55 30 50 28 Z" fill="${shade(color,0.25)}"/>
+    <line x1="50" y1="18" x2="50" y2="88" stroke="#4E6E54" stroke-width="2.5" stroke-linecap="round"/>
+    <circle cx="50" cy="34" r="3" fill="${dark}"/>
+  `);
+}
+
+/* --- Geranium (rounded clustered bloom) --- */
+function makeGeranium(color){
+  const dark = shade(color,-0.2);
+  return svgWrap(`
+    <g transform="translate(0 4)">
+      <path d="M50 24 C42 24 36 30 36 40 C36 62 44 68 50 74 C56 68 64 62 64 40 C64 30 58 24 50 24 Z" fill="${color}"/>
+      <path d="M50 30 C44 34 42 46 44 58 C46 62 50 63 50 63 C50 63 54 62 56 58 C58 46 56 34 50 30 Z" fill="${shade(color,0.25)}"/>
+      <circle cx="50" cy="48" r="4" fill="${dark}"/>
+    </g>
+  `);
+}
+
+/* --- Begonia (asymmetrical layered petals) --- */
+function makeBegonia(color){
+  const dark=shade(color,-0.2), light=shade(color,0.28);
+  return svgWrap(`
+    <path d="M50 18 C40 24 38 42 44 56 C48 64 54 66 58 60 C64 48 64 28 50 18 Z" fill="${color}"/>
+    <path d="M50 24 C44 28 42 40 46 50 C48 56 52 57 54 52 C58 40 58 28 50 24 Z" fill="${light}"/>
+    <circle cx="50" cy="44" r="5" fill="${dark}"/>
+  `);
+}
+
+/* --- Azalea (bushy clustered blossom) --- */
+function makeAzalea(color){
+  const dark=shade(color,-0.2);
+  return svgWrap(`
+    <path d="M50 22 C40 26 38 38 42 50 C44 56 48 58 50 58 C52 58 56 56 58 50 C62 38 60 26 50 22 Z" fill="${color}"/>
+    <path d="M50 30 C44 32 42 40 44 48 C45 52 48 53 50 53 C52 53 55 52 56 48 C58 40 56 32 50 30 Z" fill="${shade(color,0.25)}"/>
+    <circle cx="50" cy="42" r="4" fill="${dark}"/>
+  `);
+}
+
+/* --- Hollyhock (tall, open 5-petal bloom) --- */
+function makeHollyhock(color){
+  const dark=shade(color,-0.2), light=shade(color,0.25);
+  return svgWrap(`
+    <path d="M50 20 C38 26 34 40 38 56 C40 64 46 68 50 68 C54 68 60 64 62 56 C66 40 62 26 50 20 Z" fill="${color}"/>
+    <path d="M50 28 C44 32 42 44 44 54 C45 58 48 60 50 60 C52 60 55 58 56 54 C58 44 56 32 50 28 Z" fill="${light}"/>
+    <circle cx="50" cy="44" r="5" fill="${dark}"/>
+  `);
+}
+
+/* --- Lisianthus (soft ruffled petals) --- */
+function makeLisianthus(color){
+  const dark=shade(color,-0.2), light=shade(color,0.3);
+  return svgWrap(`
+    <path d="M50 20 C44 24 42 36 46 48 C48 54 52 56 54 52 C58 40 58 28 50 20 Z" fill="${color}"/>
+    <path d="M50 24 C46 28 44 38 46 46 C47 50 49 52 50 52 C51 52 53 50 54 46 C56 38 54 28 50 24 Z" fill="${light}"/>
+    <circle cx="50" cy="40" r="4" fill="${dark}"/>
+  `);
+}
+
+/* --- Pansy (face-like bloom) --- */
+function makePansy(color){
+  const dark=shade(color,-0.2), light=shade(color,0.35);
+  return svgWrap(`
+    <path d="M50 18 C44 20 40 28 40 38 C40 46 44 50 50 54 C56 50 60 46 60 38 C60 28 56 20 50 18 Z" fill="${color}"/>
+    <path d="M50 25 C46 28 44 34 44 40 C44 44 46 46 50 48 C54 46 56 44 56 40 C56 34 54 28 50 25 Z" fill="${light}"/>
+    <circle cx="50" cy="40" r="4" fill="${dark}"/>
+  `);
+}
+
+/* --- Ixia (starry clustered flower) --- */
+function makeIxia(color){
+  const dark=shade(color,-0.2);
+  return svgWrap(`
+    <path d="M50 22 C44 26 44 36 48 44 C50 50 50 56 50 56 C50 56 50 50 52 44 C56 36 56 26 50 22 Z" fill="${color}"/>
+    <path d="M50 24 C47 28 47 36 48 42 C49 46 50 48 50 48 C50 48 51 46 52 42 C53 36 53 28 50 24 Z" fill="${shade(color,0.25)}"/>
+    <circle cx="50" cy="40" r="4" fill="${dark}"/>
+  `);
+}
+
+/* --- Primrose (cup-shaped bloom) --- */
+function makePrimrose(color){
+  const dark=shade(color,-0.2), light=shade(color,0.25);
+  return svgWrap(`
+    <path d="M50 18 C42 20 36 28 36 40 C36 46 40 52 46 56 C48 58 50 60 50 60 C50 60 52 58 54 56 C60 52 64 46 64 40 C64 28 58 20 50 18 Z" fill="${color}"/>
+    <path d="M50 26 C45 28 42 34 42 40 C42 44 44 48 50 50 C56 48 58 44 58 40 C58 34 55 28 50 26 Z" fill="${light}"/>
+    <circle cx="50" cy="42" r="4" fill="${dark}"/>
+  `);
+}
+
+/* --- Crocus (three-petal cup bloom) --- */
+function makeCrocus(color){
+  const dark=shade(color,-0.2);
+  return svgWrap(`
+    <path d="M50 20 C42 26 40 38 44 48 C46 52 50 54 50 54 C50 54 54 52 56 48 C60 38 58 26 50 20 Z" fill="${color}"/>
+    <path d="M50 28 C45 32 44 38 46 44 C47 46 48 48 50 48 C52 48 53 46 54 44 C56 38 55 32 50 28 Z" fill="${shade(color,0.25)}"/>
+    <circle cx="50" cy="42" r="4" fill="${dark}"/>
+  `);
+}
+
+/* --- Fuchsia (dangling elegant bloom) --- */
+function makeFuchsia(color){
+  const dark=shade(color,-0.2), light=shade(color,0.25);
+  return svgWrap(`
+    <path d="M50 20 C42 24 40 36 44 50 C46 56 50 60 50 60 C50 60 54 56 56 50 C60 36 58 24 50 20 Z" fill="${color}"/>
+    <path d="M50 26 C46 30 44 40 46 46 C47 50 49 52 50 52 C51 52 53 50 54 46 C56 40 54 30 50 26 Z" fill="${light}"/>
+    <circle cx="50" cy="40" r="4" fill="${dark}"/>
+  `);
+}
+
 /* ---------------------------------------------------------------------
    2. FLOWER CATALOG — 50+ entries with color variants
 --------------------------------------------------------------------- */
@@ -1201,73 +1406,71 @@ const FLOWER_CATALOG = [
   // Roses (6 colors)
   {id:'rose_red', name:'Red Rose', cat:'Rose', svg:()=>makeRose('#C4243B')},
   {id:'rose_pink', name:'Pink Rose', cat:'Rose', svg:()=>makeRose('#E8879A')},
-  {id:'rose_white', name:'White Rose', cat:'Rose', svg:()=>makeRose('#F7F3EC')},
   {id:'rose_yellow', name:'Yellow Rose', cat:'Rose', svg:()=>makeRose('#F2C230')},
   {id:'rose_peach', name:'Peach Rose', cat:'Rose', svg:()=>makeRose('#F2A679')},
   {id:'rose_lavender', name:'Lavender Rose', cat:'Rose', svg:()=>makeRose('#B79FD1')},
   {id:'rose_burgundy', name:'Burgundy Rose', cat:'Rose', svg:()=>makeRose('#6E1F35')},
 
   // Lilies (5 colors)
-  {id:'lily_white', name:'White Lily', cat:'Lily', svg:()=>makeLily('#F9F6EE')},
   {id:'lily_pink', name:'Pink Lily', cat:'Lily', svg:()=>makeLily('#E88CA6')},
   {id:'lily_orange', name:'Tiger Lily', cat:'Lily', svg:()=>makeLily('#E8712B')},
   {id:'lily_yellow', name:'Yellow Lily', cat:'Lily', svg:()=>makeLily('#F2C230')},
   {id:'lily_red', name:'Red Lily', cat:'Lily', svg:()=>makeLily('#C4243B')},
-  {id:'calla_white', name:'White Calla Lily', cat:'Lily', svg:()=>makeCallaLily('#FBF8F2')},
   {id:'calla_purple', name:'Purple Calla Lily', cat:'Lily', svg:()=>makeCallaLily('#7A5A9E')},
 
   // Sunflowers (3 variants)
   {id:'sunflower_classic', name:'Sunflower', cat:'Sunflower', svg:()=>makeSunflower('#F2C230')},
   {id:'sunflower_deep', name:'Autumn Sunflower', cat:'Sunflower', svg:()=>makeSunflower('#E8632B','#4a2e1a')},
-  {id:'sunflower_pale', name:'Vanilla Sunflower', cat:'Sunflower', svg:()=>makeSunflower('#F5E29B')},
+  {id:'sunflower_red', name:'Red Sunflower', cat:'Sunflower', svg:()=>makeSunflower('#C4402B','#3a2412')},
 
   // Tulips (6 colors)
   {id:'tulip_red', name:'Red Tulip', cat:'Tulip', svg:()=>makeTulip('#C4243B')},
   {id:'tulip_pink', name:'Pink Tulip', cat:'Tulip', svg:()=>makeTulip('#E8879A')},
   {id:'tulip_yellow', name:'Yellow Tulip', cat:'Tulip', svg:()=>makeTulip('#F2C230')},
-  {id:'tulip_white', name:'White Tulip', cat:'Tulip', svg:()=>makeTulip('#F7F3EC')},
   {id:'tulip_purple', name:'Purple Tulip', cat:'Tulip', svg:()=>makeTulip('#7A5A9E')},
   {id:'tulip_orange', name:'Orange Tulip', cat:'Tulip', svg:()=>makeTulip('#E8712B')},
+  {id:'tulip_magenta', name:'Magenta Tulip', cat:'Tulip', svg:()=>makeTulip('#C4406F')},
 
   // Carnations (5 colors)
   {id:'carn_pink', name:'Pink Carnation', cat:'Carnation', svg:()=>makeCarnation('#E8879A')},
   {id:'carn_red', name:'Red Carnation', cat:'Carnation', svg:()=>makeCarnation('#C4243B')},
-  {id:'carn_white', name:'White Carnation', cat:'Carnation', svg:()=>makeCarnation('#F7F3EC')},
   {id:'carn_purple', name:'Purple Carnation', cat:'Carnation', svg:()=>makeCarnation('#8B6BB1')},
   {id:'carn_yellow', name:'Yellow Carnation', cat:'Carnation', svg:()=>makeCarnation('#F2C230')},
+  {id:'carn_coral', name:'Coral Carnation', cat:'Carnation', svg:()=>makeCarnation('#F2896B')},
 
   // Orchids (4 colors)
   {id:'orchid_purple', name:'Purple Orchid', cat:'Orchid', svg:()=>makeOrchid('#8B5FA8')},
-  {id:'orchid_white', name:'White Orchid', cat:'Orchid', svg:()=>makeOrchid('#F9F6EE','#F2C230')},
   {id:'orchid_pink', name:'Pink Orchid', cat:'Orchid', svg:()=>makeOrchid('#E88CA6')},
   {id:'orchid_yellow', name:'Yellow Orchid', cat:'Orchid', svg:()=>makeOrchid('#F2C230','#E8632B')},
+  {id:'orchid_magenta', name:'Magenta Orchid', cat:'Orchid', svg:()=>makeOrchid('#B1276B')},
 
   // Peonies
   {id:'peony_blush', name:'Blush Peony', cat:'Peony', svg:()=>makePeony('#F2C7CE')},
   {id:'peony_coral', name:'Coral Peony', cat:'Peony', svg:()=>makePeony('#F2896B')},
-  {id:'peony_white', name:'White Peony', cat:'Peony', svg:()=>makePeony('#FBF8F2')},
   {id:'peony_magenta', name:'Magenta Peony', cat:'Peony', svg:()=>makePeony('#C4406F')},
+  {id:'peony_burgundy', name:'Burgundy Peony', cat:'Peony', svg:()=>makePeony('#8B2E4A')},
 
   // Daisies
-  {id:'daisy_white', name:'White Daisy', cat:'Daisy', svg:()=>makeDaisy('#FBF8F2')},
   {id:'daisy_pink', name:'Pink Daisy', cat:'Daisy', svg:()=>makeDaisy('#E8A6C1')},
   {id:'gerbera_red', name:'Red Gerbera Daisy', cat:'Daisy', svg:()=>makeGerbera('#C4243B')},
   {id:'gerbera_orange', name:'Orange Gerbera Daisy', cat:'Daisy', svg:()=>makeGerbera('#E8712B')},
   {id:'gerbera_pink', name:'Pink Gerbera Daisy', cat:'Daisy', svg:()=>makeGerbera('#E8879A')},
+  {id:'daisy_yellow', name:'Yellow Daisy', cat:'Daisy', svg:()=>makeDaisy('#F5E29B')},
 
   // Ranunculus
   {id:'ranun_coral', name:'Coral Ranunculus', cat:'Ranunculus', svg:()=>makeRanunculus('#F2896B')},
-  {id:'ranun_white', name:'White Ranunculus', cat:'Ranunculus', svg:()=>makeRanunculus('#FBF8F2')},
   {id:'ranun_burgundy', name:'Burgundy Ranunculus', cat:'Ranunculus', svg:()=>makeRanunculus('#6E1F35')},
+  {id:'ranun_pink', name:'Pink Ranunculus', cat:'Ranunculus', svg:()=>makeRanunculus('#E8A6C1')},
+  {id:'ranun_yellow', name:'Yellow Ranunculus', cat:'Ranunculus', svg:()=>makeRanunculus('#F2C230')},
 
   // Hydrangea
   {id:'hydrangea_blue', name:'Blue Hydrangea', cat:'Hydrangea', svg:()=>makeHydrangea('#7FA6D6')},
   {id:'hydrangea_pink', name:'Pink Hydrangea', cat:'Hydrangea', svg:()=>makeHydrangea('#E8A6C1')},
-  {id:'hydrangea_white', name:'White Hydrangea', cat:'Hydrangea', svg:()=>makeHydrangea('#F7F3EC')},
+  {id:'hydrangea_purple', name:'Purple Hydrangea', cat:'Hydrangea', svg:()=>makeHydrangea('#8B6BB1')},
 
   // Anemone
-  {id:'anemone_white', name:'White Anemone', cat:'Anemone', svg:()=>makeAnemone('#FBF8F2')},
   {id:'anemone_red', name:'Red Anemone', cat:'Anemone', svg:()=>makeAnemone('#C4243B')},
+  {id:'anemone_purple', name:'Purple Anemone', cat:'Anemone', svg:()=>makeAnemone('#8B6BB1')},
 
   // Iris
   {id:'iris_purple', name:'Purple Iris', cat:'Iris', svg:()=>makeIris('#5E4B94')},
@@ -1275,55 +1478,106 @@ const FLOWER_CATALOG = [
 
   // Chrysanthemum
   {id:'mum_yellow', name:'Yellow Chrysanthemum', cat:'Chrysanthemum', svg:()=>makeChrysanthemum('#F2C230')},
-  {id:'mum_white', name:'White Chrysanthemum', cat:'Chrysanthemum', svg:()=>makeChrysanthemum('#FBF8F2')},
   {id:'mum_purple', name:'Purple Chrysanthemum', cat:'Chrysanthemum', svg:()=>makeChrysanthemum('#8B6BB1')},
+  {id:'mum_pink', name:'Pink Chrysanthemum', cat:'Chrysanthemum', svg:()=>makeChrysanthemum('#E8A6C1')},
 
   // Poppy
   {id:'poppy_red', name:'Red Poppy', cat:'Poppy', svg:()=>makePoppy('#D6203A')},
   {id:'poppy_orange', name:'Iceland Poppy', cat:'Poppy', svg:()=>makeIcelandPoppy('#F2A040')},
+  {id:'poppy_pink', name:'Pink Iceland Poppy', cat:'Poppy', svg:()=>makeIcelandPoppy('#E8A6C1')},
 
   // Dahlia
   {id:'dahlia_pink', name:'Pink Dahlia', cat:'Dahlia', svg:()=>makeDahlia('#E85C93')},
   {id:'dahlia_red', name:'Red Dahlia', cat:'Dahlia', svg:()=>makeDahlia('#B8243B')},
+  {id:'dahlia_yellow', name:'Yellow Dahlia', cat:'Dahlia', svg:()=>makeDahlia('#F2C230')},
+  {id:'dahlia_purple', name:'Purple Dahlia', cat:'Dahlia', svg:()=>makeDahlia('#8B6BB1')},
 
   // Others / exotic
-  {id:'freesia_white', name:'White Freesia', cat:'Other', svg:()=>makeFreesia('#FBF8F2')},
   {id:'freesia_pink', name:'Pink Freesia', cat:'Other', svg:()=>makeFreesia('#E8A6C1')},
+  {id:'freesia_yellow', name:'Yellow Freesia', cat:'Other', svg:()=>makeFreesia('#F2C230')},
   {id:'lavender', name:'Lavender Sprig', cat:'Other', svg:()=>makeLavenderSprig()},
   {id:'alstro_orange', name:'Peruvian Lily', cat:'Other', svg:()=>makeAlstroemeria('#E8712B')},
   {id:'protea_pink', name:'Pink Protea', cat:'Other', svg:()=>makeProtea('#E8879A')},
-  {id:'camellia_pink', name:'Pink Camellia', cat:'Other', svg:()=>makeCamellia('#E8A6C1')},
+  {id:'protea_magenta', name:'Magenta Protea', cat:'Other', svg:()=>makeProtea('#B1276B')},
+  {id:'camellia_red', name:'Red Camellia', cat:'Other', svg:()=>makeCamellia('#C4243B')},
+  {id:'camellia_orange', name:'Orange Camellia', cat:'Other', svg:()=>makeCamellia('#E8712B')},
   {id:'marigold_orange', name:'Marigold', cat:'Other', svg:()=>makeMarigold('#E8712B')},
+  {id:'marigold_yellow', name:'Golden Marigold', cat:'Other', svg:()=>makeMarigold('#F2C230')},
   {id:'cosmos_pink', name:'Cosmos', cat:'Other', svg:()=>makeCosmos('#E8A6C1')},
+  {id:'cosmos_magenta', name:'Magenta Cosmos', cat:'Other', svg:()=>makeCosmos('#B1276B')},
   {id:'amaryllis_red', name:'Amaryllis', cat:'Other', svg:()=>makeAmaryllis('#C4243B')},
+  {id:'amaryllis_purple', name:'Purple Amaryllis', cat:'Other', svg:()=>makeAmaryllis('#7A5A9E')},
   {id:'zinnia_orange', name:'Zinnia', cat:'Other', svg:()=>makeZinnia('#E8712B')},
+  {id:'zinnia_pink', name:'Pink Zinnia', cat:'Other', svg:()=>makeZinnia('#E85C93')},
+  {id:'zinnia_yellow', name:'Yellow Zinnia', cat:'Other', svg:()=>makeZinnia('#F2C230')},
+  {id:'zinnia_magenta', name:'Magenta Zinnia', cat:'Other', svg:()=>makeZinnia('#B1276B')},
   {id:'hyacinth_purple', name:'Hyacinth', cat:'Other', svg:()=>makeHyacinth('#8B6BB1')},
+  {id:'hyacinth_blue', name:'Blue Hyacinth', cat:'Other', svg:()=>makeHyacinth('#3E6FA8')},
+  {id:'hyacinth_pink', name:'Pink Hyacinth', cat:'Other', svg:()=>makeHyacinth('#E8879A')},
   {id:'snapdragon_pink', name:'Snapdragon', cat:'Other', svg:()=>makeSnapdragon('#E8879A')},
+  {id:'snapdragon_yellow', name:'Yellow Snapdragon', cat:'Other', svg:()=>makeSnapdragon('#F2C230')},
+  {id:'snapdragon_orange', name:'Orange Snapdragon', cat:'Other', svg:()=>makeSnapdragon('#E8712B')},
   {id:'waxflower_pink', name:'Waxflower', cat:'Other', svg:()=>makeWaxflower('#E8A6C1')},
+  {id:'waxflower_lavender', name:'Lavender Waxflower', cat:'Other', svg:()=>makeWaxflower('#B79FD1')},
   {id:'statice_purple', name:'Statice', cat:'Other', svg:()=>makeStatice('#8B6BB1')},
+  {id:'statice_blue', name:'Blue Statice', cat:'Other', svg:()=>makeStatice('#3E6FA8')},
+  {id:'statice_pink', name:'Pink Statice', cat:'Other', svg:()=>makeStatice('#E8879A')},
   {id:'birdofparadise', name:'Bird of Paradise', cat:'Other', svg:()=>makeBirdOfParadise()},
-  {id:'gardenia', name:'Gardenia', cat:'Other', svg:()=>makeGardenia()},
   {id:'sweetpea_pink', name:'Sweet Pea', cat:'Other', svg:()=>makeSweetPea('#E8A6C1')},
+  {id:'sweetpea_lilac', name:'Lilac Sweet Pea', cat:'Other', svg:()=>makeSweetPea('#B79FD1')},
+  {id:'sweetpea_magenta', name:'Magenta Sweet Pea', cat:'Other', svg:()=>makeSweetPea('#B1276B')},
   {id:'delphinium_blue', name:'Delphinium', cat:'Other', svg:()=>makeDelphinium('#5A87C7')},
+  {id:'delphinium_purple', name:'Purple Delphinium', cat:'Other', svg:()=>makeDelphinium('#8B6BB1')},
+  {id:'delphinium_teal', name:'Teal Delphinium', cat:'Other', svg:()=>makeDelphinium('#2E7A76')},
   {id:'aster_purple', name:'Aster', cat:'Other', svg:()=>makeAster('#8B6BB1')},
-  {id:'magnolia_white', name:'Magnolia', cat:'Other', svg:()=>makeMagnolia('#FBF8F2')},
+  {id:'aster_pink', name:'Pink Aster', cat:'Other', svg:()=>makeAster('#E8879A')},
+  {id:'aster_blue', name:'Blue Aster', cat:'Other', svg:()=>makeAster('#3E6FA8')},
   {id:'hibiscus_red', name:'Hibiscus', cat:'Other', svg:()=>makeHibiscus('#D6203A')},
+  {id:'hibiscus_pink', name:'Pink Hibiscus', cat:'Other', svg:()=>makeHibiscus('#E85C93')},
+  {id:'hibiscus_orange', name:'Orange Hibiscus', cat:'Other', svg:()=>makeHibiscus('#E8712B')},
   {id:'buttercup_yellow', name:'Buttercup', cat:'Other', svg:()=>makeButtercup('#F2C230')},
+  {id:'buttercup_orange', name:'Orange Buttercup', cat:'Other', svg:()=>makeButtercup('#E8712B')},
+  {id:'buttercup_gold', name:'Golden Buttercup', cat:'Other', svg:()=>makeButtercup('#D6A24C')},
   {id:'forgetmenot', name:'Forget-Me-Not', cat:'Other', svg:()=>makeForgetMeNot()},
   {id:'foxglove_pink', name:'Foxglove', cat:'Other', svg:()=>makeFoxglove('#D67CA0')},
-  {id:'queenanne', name:"Queen Anne's Lace", cat:'Other', svg:()=>makeQueenAnnesLace()},
-  {id:'starofbethlehem', name:'Star of Bethlehem', cat:'Other', svg:()=>makeStarOfBethlehem()},
-  {id:'babysbreath', name:"Baby's Breath", cat:'Other', svg:()=>makeBabysBreath()},
+  {id:'foxglove_purple', name:'Purple Foxglove', cat:'Other', svg:()=>makeFoxglove('#8B6BB1')},
+  {id:'foxglove_burgundy', name:'Burgundy Foxglove', cat:'Other', svg:()=>makeFoxglove('#6E2438')},
   {id:'wildflower_blue', name:'Blue Wildflower', cat:'Other', svg:()=>makeWildflower6('#6B9BD6')},
   {id:'wildflower_coral', name:'Coral Wildflower', cat:'Other', svg:()=>makeWildflower6('#F2896B')},
   {id:'wildflower_yellow', name:'Yellow Wildflower', cat:'Other', svg:()=>makeWildflower6('#F2C230')},
   {id:'wildflower_pink', name:'Pink Wildflower', cat:'Other', svg:()=>makeWildflower6('#E8879A')},
+  {id:'wildflower_purple', name:'Purple Wildflower', cat:'Other', svg:()=>makeWildflower6('#8B6BB1')},
+  {id:'wildflower_orange', name:'Orange Wildflower', cat:'Other', svg:()=>makeWildflower6('#E8712B')},
+
+  // Extra distinct flower types for a much larger picker
+  {id:'bluebell_blue', name:'Bluebell', cat:'Other', svg:()=>makeBluebell('#3E6FA8')},
+  {id:'bluebell_violet', name:'Violet Bluebell', cat:'Other', svg:()=>makeBluebell('#7A5A9E')},
+  {id:'geranium_red', name:'Geranium', cat:'Other', svg:()=>makeGeranium('#C4243B')},
+  {id:'geranium_hotpink', name:'Hot Pink Geranium', cat:'Other', svg:()=>makeGeranium('#E85C93')},
+  {id:'begonia_coral', name:'Begonia', cat:'Other', svg:()=>makeBegonia('#E8712B')},
+  {id:'begonia_magenta', name:'Magenta Begonia', cat:'Other', svg:()=>makeBegonia('#B1276B')},
+  {id:'azalea_pink', name:'Azalea', cat:'Other', svg:()=>makeAzalea('#E8879A')},
+  {id:'azalea_orange', name:'Orange Azalea', cat:'Other', svg:()=>makeAzalea('#E8712B')},
+  {id:'hollyhock_red', name:'Hollyhock', cat:'Other', svg:()=>makeHollyhock('#D6203A')},
+  {id:'hollyhock_purple', name:'Purple Hollyhock', cat:'Other', svg:()=>makeHollyhock('#8B6BB1')},
+  {id:'lisianthus_lilac', name:'Lisianthus', cat:'Other', svg:()=>makeLisianthus('#B79FD1')},
+  {id:'lisianthus_rose', name:'Rose Lisianthus', cat:'Other', svg:()=>makeLisianthus('#E8879A')},
+  {id:'pansy_violet', name:'Pansy', cat:'Other', svg:()=>makePansy('#7A5A9E')},
+  {id:'pansy_blue', name:'Blue Pansy', cat:'Other', svg:()=>makePansy('#3E6FA8')},
+  {id:'ixia_orange', name:'Ixia', cat:'Other', svg:()=>makeIxia('#E8712B')},
+  {id:'ixia_yellow', name:'Golden Ixia', cat:'Other', svg:()=>makeIxia('#F2C230')},
+  {id:'primrose_yellow', name:'Primrose', cat:'Other', svg:()=>makePrimrose('#F2C230')},
+  {id:'primrose_orange', name:'Orange Primrose', cat:'Other', svg:()=>makePrimrose('#E8712B')},
+  {id:'crocus_purple', name:'Crocus', cat:'Other', svg:()=>makeCrocus('#8B6BB1')},
+  {id:'crocus_blue', name:'Blue Crocus', cat:'Other', svg:()=>makeCrocus('#3E6FA8')},
+  {id:'fuchsia_magenta', name:'Fuchsia', cat:'Other', svg:()=>makeFuchsia('#B1276B')},
+  {id:'fuchsia_pink', name:'Pink Fuchsia', cat:'Other', svg:()=>makeFuchsia('#E8879A')},
+  {id:'fuchsia_violet', name:'Violet Fuchsia', cat:'Other', svg:()=>makeFuchsia('#7A5A9E')},
 
   // Extra color variants across existing species for more range
   {id:'rose_coral', name:'Coral Rose', cat:'Rose', svg:()=>makeRose('#E85C4A')},
   {id:'rose_black', name:'Black Baccara Rose', cat:'Rose', svg:()=>makeRose('#3A1F26')},
   {id:'tulip_black', name:'Black Tulip', cat:'Tulip', svg:()=>makeTulip('#3A2A3E')},
-  {id:'tulip_magenta', name:'Magenta Tulip', cat:'Tulip', svg:()=>makeTulip('#C4406F')},
   {id:'carn_coral', name:'Coral Carnation', cat:'Carnation', svg:()=>makeCarnation('#F2896B')},
   {id:'orchid_magenta', name:'Magenta Orchid', cat:'Orchid', svg:()=>makeOrchid('#B1276B')},
   {id:'lily_burgundy', name:'Burgundy Lily', cat:'Lily', svg:()=>makeLily('#6E1F35')},
@@ -1344,20 +1598,13 @@ const FLOWER_CATALOG = [
   {id:'poppy_pink', name:'Pink Iceland Poppy', cat:'Poppy', svg:()=>makeIcelandPoppy('#E8A6C1')},
   {id:'freesia_yellow', name:'Yellow Freesia', cat:'Other', svg:()=>makeFreesia('#F2C230')},
   {id:'aster_pink', name:'Pink Aster', cat:'Other', svg:()=>makeAster('#E8A6C1')},
-  {id:'cosmos_white', name:'White Cosmos', cat:'Other', svg:()=>makeCosmos('#FBF8F2')},
   {id:'marigold_yellow', name:'Yellow Marigold', cat:'Other', svg:()=>makeMarigold('#F2C230')},
   {id:'alstro_pink', name:'Pink Peruvian Lily', cat:'Other', svg:()=>makeAlstroemeria('#E8879A')},
-  {id:'protea_white', name:'White Protea', cat:'Other', svg:()=>makeProtea('#F7F3EC')},
-  {id:'gardenia_cream', name:'Cream Gardenia', cat:'Other', svg:()=>makeGardenia()},
   {id:'hibiscus_pink', name:'Pink Hibiscus', cat:'Other', svg:()=>makeHibiscus('#E85C93')},
-  {id:'magnolia_pink', name:'Pink Magnolia', cat:'Other', svg:()=>makeMagnolia('#E8A6C1')},
   {id:'hyacinth_pink', name:'Pink Hyacinth', cat:'Other', svg:()=>makeHyacinth('#E8879A')},
   {id:'delphinium_purple', name:'Purple Delphinium', cat:'Other', svg:()=>makeDelphinium('#8B6BB1')},
   {id:'snapdragon_yellow', name:'Yellow Snapdragon', cat:'Other', svg:()=>makeSnapdragon('#F2C230')},
-  {id:'buttercup_white', name:'White Buttercup', cat:'Other', svg:()=>makeButtercup('#F7F3EC')},
   {id:'foxglove_purple', name:'Purple Foxglove', cat:'Other', svg:()=>makeFoxglove('#8B6BB1')},
-  {id:'iris_white', name:'White Iris', cat:'Iris', svg:()=>makeIris('#F7F3EC','#E8DDF0')},
-  {id:'amaryllis_white', name:'White Amaryllis', cat:'Other', svg:()=>makeAmaryllis('#F7F3EC')},
   {id:'calla_pink', name:'Pink Calla Lily', cat:'Lily', svg:()=>makeCallaLily('#E8A6C1')},
 
   // Leaves (separate small section, still added to bouquet like flowers)
@@ -1633,7 +1880,7 @@ const CARD_CATALOG = [
 const state = {
   step: 'flowers',
   stems: [], // {uid, flowerId, x, y, scale, rot, z}
-  maxStems: 30,
+  maxStems: 55,
   wrapperId: null,
   wrapperX: 50, wrapperY: 50,
   wrapperScale: 100,
@@ -1644,10 +1891,79 @@ const state = {
   cardId: null,
   cardX: 76, cardY: 68,
   cardNote: '', cardTo:'', cardFrom:'',
+  theme: 'friendship',
+  themeMessage: 'Friends make life bloom',
+  musicUrl: '',
+  musicPlaying: true,
+  photoDataUrl: '',
   selectedStemUid: null,
   selectedWrapper: false,
   zCounter: 1,
 };
+
+const THEME_OPTIONS = [
+  {
+    id:'friendship',
+    title:'Friendship Bouquet',
+    emoji:'💛',
+    blurb:'Bright, cheerful, and full of joyful blossoms for someone treasured.',
+    accent:'#F2C230',
+    messages:['Friends make life bloom', 'A bouquet for someone special.']
+  },
+  {
+    id:'love',
+    title:'Love Bouquet',
+    emoji:'❤️',
+    blurb:'Romantic roses and delicate petals for heartfelt moments and soft affection.',
+    accent:'#E8879A',
+    messages:['Made with love', 'Every flower tells a love story.']
+  }
+];
+
+function applyThemeClass(){
+  document.body.classList.remove('theme-friendship','theme-love');
+  if(state.theme==='love') document.body.classList.add('theme-love');
+  else document.body.classList.add('theme-friendship');
+}
+
+function renderThemeOptions(){
+  const wrap = document.getElementById('themeOptions');
+  if(!wrap) return;
+  wrap.innerHTML = THEME_OPTIONS.map(theme=>`
+    <div class="theme-card ${state.theme===theme.id?'selected':''}" data-theme="${theme.id}">
+      <div class="theme-emoji" style="background:linear-gradient(135deg, ${theme.accent}22, ${theme.accent}33);">${theme.emoji}</div>
+      <h3>${theme.title}</h3>
+      <p>${theme.blurb}</p>
+      <div class="theme-messages">
+        ${theme.messages.map(msg=>`<span>${msg}</span>`).join('')}
+      </div>
+      <div class="theme-visual ${theme.id==='love'?'theme-visual-love':'theme-visual-friendship'}"></div>
+    </div>
+  `).join('');
+  wrap.querySelectorAll('.theme-card').forEach(card=>{
+    card.addEventListener('click', ()=>{
+      state.theme = card.dataset.theme;
+      state.themeMessage = THEME_OPTIONS.find(t=>t.id===state.theme)?.messages[0] || 'A bouquet for someone special.';
+      renderThemeOptions();
+      applyThemeClass();
+      renderStage();
+      showToast(state.theme==='love' ? 'Love theme selected ❤️' : 'Friendship theme selected 💛', '✨');
+    });
+  });
+}
+
+function renderThemeDetails(){
+  const selected = THEME_OPTIONS.find(t=>t.id===state.theme) || THEME_OPTIONS[0];
+  const messageCard = document.querySelector('.theme-message-card');
+  if(messageCard){ messageCard.remove(); }
+  const hero = document.querySelector('.theme-hero');
+  if(hero){
+    const note = document.createElement('div');
+    note.className='theme-message-card';
+    note.innerHTML = `<strong>${selected.title}</strong><br>${selected.messages[0]} • ${selected.messages[1]}`;
+    hero.appendChild(note);
+  }
+}
 
 const STEP_ORDER = ['flowers','arrange','wrapper','bow','card','share'];
 
@@ -1709,8 +2025,21 @@ function goToScreen(id){
 }
 
 document.getElementById('clickToStart').addEventListener('click', ()=>{
+  goToScreen('themeScreen');
+  renderThemeOptions();
+  renderThemeDetails();
+  applyThemeClass();
+  showToast('Choose a beautiful theme first ✨', '💐');
+});
+
+document.getElementById('themeBackBtn').addEventListener('click', ()=>{
+  goToScreen('landing');
+});
+
+document.getElementById('themeContinueBtn').addEventListener('click', ()=>{
   goToScreen('builder');
   setStep('flowers');
+  applyThemeClass();
   showToast('Let\'s build something beautiful!', '💐');
 });
 
@@ -1877,9 +2206,43 @@ function generateFillerLeaves(stems) {
 /* =========================================================================
    STAGE RENDERING (bouquet canvas) — used both in builder + share/receive previews
    ========================================================================= */
+function buildPhotoTagMarkup(sourceState = state){
+  const photoUrl = sourceState?.photoDataUrl;
+  if(!photoUrl) return '';
+  return `
+    <div style="position:relative; width:100%; aspect-ratio:1/1; transform:rotate(-4deg); filter:drop-shadow(0 8px 14px rgba(0,0,0,0.24));">
+      <svg viewBox="0 0 40 26" style="position:absolute; top:-17px; left:3px; width:40px; height:26px; z-index:2; overflow:visible;">
+        <path d="M9 24 Q20 -6 31 24" stroke="#B8865B" stroke-width="2" fill="none" stroke-linecap="round" opacity="0.9"/>
+      </svg>
+      <div style="position:relative; background:transparent; width:100%; height:100%;">
+        <div style="width:100%; height:100%; border-radius:14px; border:2px solid rgba(194,92,116,0.25); background:linear-gradient(135deg,#fff,#fdf1f6); padding:6px; box-sizing:border-box;">
+          <img src="${photoUrl}" alt="Bouquet memory" style="width:100%; height:100%; object-fit:cover; border-radius:10px; display:block;" />
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function buildCombinedCardAndPhotoMarkup(sourceState = state){
+  const hasCard = Boolean(sourceState?.cardId);
+  const hasPhoto = Boolean(sourceState?.photoDataUrl);
+  if(!hasCard && !hasPhoto) return '';
+  if(!hasCard) return buildPhotoTagMarkup(sourceState);
+  if(!hasPhoto) return buildStageCardMarkup(sourceState);
+  return `
+    <div style="position:relative; width:100%; height:auto;">
+      ${buildStageCardMarkup(sourceState)}
+      <div style="position:absolute; left:72%; top:14%; width:42%; max-width:112px; aspect-ratio:1/1; z-index:5; transform:rotate(8deg) scale(1.06);">
+        ${buildPhotoTagMarkup(sourceState)}
+      </div>
+    </div>
+  `;
+}
+
 function renderStage(){
   const stage = document.getElementById('bouquetStage');
   const emptyMsg = document.getElementById('stageEmptyMsg');
+  const selectedTheme = THEME_OPTIONS.find(t=>t.id===state.theme) || THEME_OPTIONS[0];
   // clear
   stage.innerHTML = '';
   if(emptyMsg) stage.appendChild(emptyMsg);
@@ -1892,43 +2255,10 @@ function renderStage(){
       const wrapDiv = document.createElement('div');
       wrapDiv.className='stage-wrapper-layer' + (state.selectedWrapper?' selected':'');
       const size = 100 * (state.wrapperScale/100);
-      wrapDiv.style.cssText=`left:${state.wrapperX}%; top:${state.wrapperY}%; width:${size}%; aspect-ratio:1; transform:translate(-50%,-50%) rotate(${state.wrapperRot}deg); z-index:3; pointer-events:auto;`;
+      wrapDiv.style.cssText=`left:${state.wrapperX}%; top:${state.wrapperY}%; width:${size}%; aspect-ratio:1; transform:translate(-50%,-50%) rotate(${state.wrapperRot}deg); z-index:3; pointer-events:none;`;
       wrapDiv.dataset.type='wrapper';
       wrapDiv.innerHTML = renderWrapperCone(w);
       stage.appendChild(wrapDiv);
-      attachWrapperDrag(wrapDiv);
-      wrapDiv.addEventListener('click', (e)=>{
-        e.stopPropagation();
-        state.selectedWrapper = !state.selectedWrapper;
-        state.selectedStemUid = null;
-        renderStage();
-        renderArrangeList();
-      });
-      if(state.selectedWrapper){
-        const controls = document.createElement('div');
-        controls.className='item-controls';
-        controls.style.cssText='position:absolute; top:100%; left:50%; transform:translateX(-50%); margin-top:10px;';
-        controls.innerHTML = `
-          <button data-act="smaller" title="Smaller">−</button>
-          <button data-act="bigger" title="Bigger">+</button>
-          <button data-act="rotL" title="Rotate left">↺</button>
-          <button data-act="rotR" title="Rotate right">↻</button>
-          <button data-act="del" class="remove-btn" title="Remove wrapper">✕ Remove</button>
-        `;
-        wrapDiv.appendChild(controls);
-        controls.addEventListener('click', (e)=>{
-          e.stopPropagation();
-          const act = e.target.closest('button')?.dataset.act;
-          if(!act) return;
-          if(act==='smaller') state.wrapperScale = Math.max(60, state.wrapperScale-10);
-          if(act==='bigger') state.wrapperScale = Math.min(180, state.wrapperScale+10);
-          if(act==='rotL') state.wrapperRot -= 15;
-          if(act==='rotR') state.wrapperRot += 15;
-          if(act==='del'){ state.wrapperId=null; state.selectedWrapper=false; renderWrapperSelection(); showToast('Wrapper removed','🎁'); renderStage(); return; }
-          syncWrapperSizeSlider();
-          renderStage();
-        });
-      }
     }
   }
 
@@ -2010,32 +2340,29 @@ function renderStage(){
     }
   }
 
-  // bow — sits at the collar where the flowers meet the wrapper, draggable
-  // just like a flower so it can be nudged into place.
+  // bow — stays fixed at its chosen position and only changes size.
   if(state.bowId){
     const b = BOW_CATALOG.find(x=>x.id===state.bowId);
     if(b){
       const size = 70 * (state.bowScale/100);
       const bowDiv = document.createElement('div');
       bowDiv.className='stage-bow-layer';
-      bowDiv.style.cssText = `left:${state.bowX}%; top:${state.bowY}%; width:${size}px; height:${size}px; transform:translate(-50%,-50%); z-index:400; pointer-events:auto; cursor:grab; touch-action:none;`;
+      bowDiv.style.cssText = `left:${state.bowX}%; top:${state.bowY}%; width:${size}px; height:${size}px; transform:translate(-50%,-50%); z-index:400; pointer-events:none; cursor:default; touch-action:none;`;
       bowDiv.innerHTML = makeBow(b.color, b.style);
       stage.appendChild(bowDiv);
-      attachBowDrag(bowDiv);
     }
   }
 
-  // tagged card — centered directly over the wrapper's front face so it
-  // reads as tied onto the bouquet rather than floating beside it; draggable
-  // like the bow and flowers.
-  if(state.cardId){
+  // pinned card — tagged directly onto the wrapper's front face (not
+  // floating off to the side), angled like a real gift tag pinned through
+  // the paper, with the actual note text printed on it.
+  if(state.cardId || state.photoDataUrl){
     const cardDiv = document.createElement('div');
     cardDiv.className='stage-card-layer';
     cardDiv.id = 'stageCardLayer';
-    cardDiv.style.cssText = `left:${state.cardX}%; top:${state.cardY}%; width:30%; max-width:106px; transform:translate(-50%,-50%); z-index:450; pointer-events:auto; cursor:grab; touch-action:none;`;
-    cardDiv.innerHTML = buildStageCardMarkup();
+    cardDiv.style.cssText = `left:60%; top:64%; width:${state.photoDataUrl && state.cardId ? 38 : 32}%; max-width:${state.photoDataUrl && state.cardId ? 132 : 112}px; z-index:450;`;
+    cardDiv.innerHTML = buildCombinedCardAndPhotoMarkup(state);
     stage.appendChild(cardDiv);
-    attachCardDrag(cardDiv);
   }
 
   stage.onclick = ()=>{ state.selectedStemUid=null; renderStage(); renderArrangeList(); };
@@ -2206,8 +2533,8 @@ function attachDrag(el, stem){
     const dy = point.clientY - startY;
     const pctDx = (dx/rect.width)*100;
     const pctDy = (dy/rect.height)*100;
-    stem.x = Math.max(2,Math.min(98, origXPercent + pctDx));
-    stem.y = Math.max(2,Math.min(98, origYPercent + pctDy));
+    stem.x = origXPercent + pctDx;
+    stem.y = origYPercent + pctDy;
     el.style.left = stem.x+'%';
     el.style.top = stem.y+'%';
     // keep the flower's stem-line glued to the moving head instead of
@@ -2517,16 +2844,40 @@ function renderBowSelection(){
       state.bowId = state.bowId===card.dataset.id ? null : card.dataset.id;
       renderBowSelection();
       renderStage();
-      document.getElementById('bowSizeControl').style.display = state.bowId ? 'block' : 'none';
+      const bowSizeControl = document.getElementById('bowSizeControl');
+      if(bowSizeControl) bowSizeControl.style.display = state.bowId ? 'block' : 'none';
       if(state.bowId) showToast('Bow tied on! 🎀');
     });
   });
-  document.getElementById('bowSizeControl').style.display = state.bowId ? 'block' : 'none';
+  const bowSizeControl = document.getElementById('bowSizeControl');
+  if(bowSizeControl) bowSizeControl.style.display = state.bowId ? 'block' : 'none';
 }
-document.getElementById('bowSizeSlider').addEventListener('input', (e)=>{
-  state.bowScale = parseInt(e.target.value);
-  renderStage();
-});
+
+let bowControlsInitialized = false;
+function initBowControls(){
+  if(bowControlsInitialized) return;
+  bowControlsInitialized = true;
+
+  const slider = document.getElementById('bowSizeSlider');
+  const minusBtn = document.getElementById('bowSizeDecreaseBtn');
+  const plusBtn = document.getElementById('bowSizeIncreaseBtn');
+
+  function setBowSize(value){
+    state.bowScale = Math.max(60, Math.min(260, parseInt(value) || 100));
+    if(slider) slider.value = state.bowScale;
+    renderStage();
+  }
+
+  if(slider) slider.addEventListener('input', (e)=> setBowSize(e.target.value));
+  if(minusBtn) minusBtn.addEventListener('click', ()=> setBowSize(state.bowScale - 10));
+  if(plusBtn) plusBtn.addEventListener('click', ()=> setBowSize(state.bowScale + 10));
+}
+
+initBowControls();
+if(document.readyState === 'loading'){
+  document.addEventListener('DOMContentLoaded', initBowControls);
+}
+
 document.getElementById('wrapperSizeSlider').addEventListener('input', (e)=>{
   state.wrapperScale = parseInt(e.target.value);
   renderStage();
@@ -2552,6 +2903,7 @@ function renderCardSelection(){
     });
   });
 }
+
 document.getElementById('cardNote').addEventListener('input', (e)=>{
   state.cardNote = e.target.value;
   document.getElementById('cardCharCount').textContent = e.target.value.length;
@@ -2565,6 +2917,71 @@ document.getElementById('cardFrom').addEventListener('input', (e)=>{
   state.cardFrom = e.target.value;
   refreshStageCardFace();
 });
+
+document.getElementById('musicUrlInput').addEventListener('input', (e)=>{
+  state.musicUrl = e.target.value.trim();
+  renderSpotifyPreview();
+});
+
+document.getElementById('musicToggleBtn').addEventListener('click', ()=>{
+  state.musicPlaying = !state.musicPlaying;
+  renderSpotifyPreview();
+});
+
+function buildSpotifyEmbedUrl(url){
+  if(!url) return '';
+  const match = url.match(/open\.spotify\.com\/(track|album|playlist|artist|episode)\/([a-zA-Z0-9]+)/i);
+  if(match){
+    return `https://open.spotify.com/embed/${match[1]}/${match[2]}?autoplay=1&theme=0`;
+  }
+  return url;
+}
+
+function renderSpotifyPreview(){
+  const frame = document.getElementById('spotifyFrame');
+  const btn = document.getElementById('musicToggleBtn');
+  if(!frame) return;
+  if(!state.musicUrl){ frame.innerHTML=''; if(btn) btn.textContent='Pause song'; return; }
+  const embedUrl = buildSpotifyEmbedUrl(state.musicUrl);
+  frame.innerHTML = state.musicPlaying ? `<iframe src="${embedUrl}" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>` : '<div class="empty-state">Music paused — tap to resume.</div>';
+  if(btn){ btn.textContent = state.musicPlaying ? 'Pause song' : 'Play song'; }
+}
+
+function renderShareMusicPreview(){
+  const shareMusic = document.getElementById('shareMusicPreview');
+  if(!shareMusic) return;
+  if(!state.musicUrl){ shareMusic.innerHTML=''; return; }
+  const embedUrl = buildSpotifyEmbedUrl(state.musicUrl);
+  shareMusic.innerHTML = `<div class="share-music-preview"><iframe src="${embedUrl}" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe></div>`;
+}
+
+function renderReceiverMusicPreview(giftState){
+  const receiverMusic = document.getElementById('receiveMusicPreview');
+  if(!receiverMusic) return;
+  if(!giftState.musicUrl){ receiverMusic.innerHTML=''; return; }
+  const embedUrl = buildSpotifyEmbedUrl(giftState.musicUrl);
+  receiverMusic.innerHTML = `<iframe src="${embedUrl}" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>`;
+}
+
+document.getElementById('photoInput').addEventListener('change', (e)=>{
+  const file = e.target.files && e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = ()=>{
+    state.photoDataUrl = reader.result;
+    renderPhotoPreview();
+    renderStage();
+    showToast('Photo attached to your bouquet ✨', '📸');
+  };
+  reader.readAsDataURL(file);
+});
+
+function renderPhotoPreview(){
+  const preview = document.getElementById('photoPreview');
+  if(!preview) return;
+  if(!state.photoDataUrl){ preview.innerHTML = '<div class="empty-state">Choose an image from your gallery to attach.</div>'; return; }
+  preview.innerHTML = `<img src="${state.photoDataUrl}" alt="Selected bouquet memory" />`;
+}
 
 /* =========================================================================
    SHARE SCREEN
@@ -2650,10 +3067,10 @@ function cloneStageInto(targetId){
     }
   }
   // Card
-  if(state.cardId){
+  if(state.cardId || state.photoDataUrl){
     const d = document.createElement('div');
-    d.style.cssText = `position:absolute; left:${state.cardX}%; top:${state.cardY}%; width:30%; max-width:106px; transform:translate(-50%,-50%); z-index:450;`;
-    d.innerHTML = buildStageCardMarkup();
+    d.style.cssText = `position:absolute; left:${state.cardX}%; top:${state.cardY}%; width:${state.photoDataUrl && state.cardId ? 36 : 30}%; max-width:${state.photoDataUrl && state.cardId ? 144 : 106}px; transform:translate(-50%,-50%); z-index:450;`;
+    d.innerHTML = buildCombinedCardAndPhotoMarkup(state);
     target.appendChild(d);
   }
 }
@@ -2674,6 +3091,25 @@ function generateGiftId(){
   return 'g' + Math.random().toString(36).slice(2,10) + Date.now().toString(36).slice(-4);
 }
 
+function encodeGiftPayload(payload){
+  try {
+    const json = JSON.stringify(payload);
+    return btoa(encodeURIComponent(json).replace(/%([0-9A-F]{2})/g, (_, p1)=>String.fromCharCode(parseInt(p1,16))));
+  } catch (error) {
+    return '';
+  }
+}
+
+function decodeGiftPayload(encoded){
+  try {
+    const json = decodeURIComponent(atob(encoded).split('').map(ch=>'%'+('00'+ch.charCodeAt(0).toString(16)).slice(-2)).join(''));
+    return JSON.parse(json);
+  } catch (error) {
+    console.warn('Could not decode inline gift payload', error);
+    return null;
+  }
+}
+
 let currentGiftId = null;
 
 async function saveGiftAndBuildLink(){
@@ -2682,23 +3118,32 @@ async function saveGiftAndBuildLink(){
     wrapperId: state.wrapperId,
     wrapperX: state.wrapperX, wrapperY: state.wrapperY, wrapperScale: state.wrapperScale, wrapperRot: state.wrapperRot,
     bowId: state.bowId, bowScale: state.bowScale, bowX: state.bowX, bowY: state.bowY,
-    cardId: state.cardId, cardX: state.cardX, cardY: state.cardY, cardNote: state.cardNote, cardTo: state.cardTo, cardFrom: state.cardFrom,
+    cardId: state.cardId, cardNote: state.cardNote, cardTo: state.cardTo, cardFrom: state.cardFrom,
     createdAt: Date.now(),
   };
   const giftId = currentGiftId || generateGiftId();
   currentGiftId = giftId;
 
-  const giftRef = window.firebaseDoc(window.db, "bouquets", giftId);
-  await window.firebaseSetDoc(giftRef, payload);
+  if(window.storage && window.storage.set){
+    // shared=true: the RECEIVER opening this link is a different session/
+    // device than the sender, so the record must be readable by anyone,
+    // not just saved privately to the sender's own storage.
+    await window.storage.set('gift:' + giftId, JSON.stringify(payload), true);
+  }
 
   const url = new URL(window.location.href.split('#')[0].split('?')[0]);
   url.searchParams.set('gift', giftId);
+  const compactPayload = encodeGiftPayload(payload);
+  if(compactPayload && compactPayload.length < 1200){
+    url.hash = `giftData=${compactPayload}`;
+  }
   return url.toString();
 }
 
 async function goToShareScreen(){
   goToScreen('shareScreen');
   cloneStageInto('sharePreviewStage');
+  renderShareMusicPreview();
   const notePrev = document.getElementById('shareNotePreview');
   if(state.cardId && (state.cardNote || state.cardTo || state.cardFrom)){
     notePrev.style.display='block';
@@ -2744,11 +3189,11 @@ function shareVia(platform){
     showToast('Hang on, still preparing your link…', '⏳');
     return;
   }
-  const text = encodeURIComponent(`🌷 I made you a bouquet on Blooms & Bows! Open your gift: ${link}`);
+  const message = `🌷 I made you a bouquet on Blooms & Bows! Open your gift here: ${link}`;
+  const text = encodeURIComponent(message);
   let shareUrl='';
   if(platform==='whatsapp') shareUrl = `https://wa.me/?text=${text}`;
   if(platform==='instagram'){
-    // Instagram has no direct web share-link API for DMs; copy link + open Instagram
     navigator.clipboard && navigator.clipboard.writeText(link);
     showToast('Link copied — paste it into your Instagram DM or story!','📸');
     window.open('https://www.instagram.com/', '_blank');
@@ -2774,7 +3219,7 @@ document.getElementById('previewAsReceiverBtn').addEventListener('click', ()=>{
 /* =========================================================================
    RECEIVER EXPERIENCE
    ========================================================================= */
-function showReceiverExperience(giftState, opts={}){
+function revealReceiverBouquet(giftState, opts={}){
   const { isDirectOpen=false } = opts;
   goToScreen('receiveScreen');
   document.getElementById('receiveFromLine').textContent = giftState.cardFrom ? `A bouquet from ${giftState.cardFrom} 💐` : 'Someone sent you a bouquet 💐';
@@ -2786,30 +3231,13 @@ function showReceiverExperience(giftState, opts={}){
   } else {
     noteBox.style.display='none';
   }
-  // Fade/scale the whole card smoothly into view instead of snapping in —
-  // restart the animation cleanly by removing then re-adding the class after
-  // a reflow.
-  const card = document.querySelector('#receiveScreen .receive-card');
-  if(card){
-    card.classList.remove('gift-reveal');
-    void card.offsetWidth;
-    card.classList.add('gift-reveal');
-  }
-  if(isDirectOpen){
-    // They already opened a real gift link — the bouquet fading smoothly
-    // into view IS the reveal, so a blocking "tap to open" modal on top of
-    // it would just be a redundant extra step.
-    showToast('Your bouquet has arrived! 💐','🎁');
-  } else {
-    // Sender testing "See receiver view" — keep the fun preview modal here.
-    showModal({
-      emoji:'🎁',
-      title:'You have a gift waiting for you!',
-      body:'Someone made this bouquet just for you on Blooms & Bows. Tap below to open it.',
-      primaryText:'Open my gift 🌷',
-      onPrimary: ()=>{ showToast('Enjoy your bouquet! 💕','🌷'); }
-    });
-  }
+  showModal({
+    emoji:'🎁',
+    title:'You have a gift waiting for you!',
+    body:'Tap the button below to reveal your gift.',
+    primaryText:'Gift',
+    onPrimary: ()=> revealReceiverBouquet(giftState, opts)
+  });
 }
 
 function cloneStageIntoWithData(targetId, data){
@@ -2864,12 +3292,17 @@ function cloneStageIntoWithData(targetId, data){
       target.appendChild(d);
     }
   }
-  // Card
-  if(data.cardId){
+  if(data.cardId || data.photoDataUrl){
     const d = document.createElement('div');
-    d.style.cssText = `position:absolute; left:${data.cardX||76}%; top:${data.cardY||68}%; width:30%; max-width:106px; transform:translate(-50%,-50%); z-index:450;`;
-    d.innerHTML = buildStageCardMarkup(data);
+    d.style.cssText = `position:absolute; left:60%; top:64%; width:${data.photoDataUrl && data.cardId ? 38 : 32}%; max-width:${data.photoDataUrl && data.cardId ? 132 : 112}px; z-index:450;`;
+    d.innerHTML = buildCombinedCardAndPhotoMarkup(data);
     target.appendChild(d);
+  }
+  if(data.themeMessage){
+    const message = document.createElement('div');
+    message.style.cssText = `position:absolute; left:50%; top:8%; transform:translateX(-50%); z-index:480; padding:10px 14px; border-radius:999px; background:rgba(255,255,255,0.85); color:${data.theme==='love'?'#E8879A':'#F2C230'}; font-weight:800; font-size:13px; box-shadow:0 8px 18px rgba(91,58,85,0.12);`;
+    message.textContent = data.themeMessage;
+    target.appendChild(message);
   }
 }
 
@@ -2905,6 +3338,38 @@ function showGiftNotFoundState(){
   document.getElementById('receiveNoteBox').style.display='none';
 }
 
+async function loadGiftData(giftId){
+  try {
+    const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ''));
+    const encodedGift = hashParams.get('giftData');
+    if(encodedGift){
+      const decoded = decodeGiftPayload(encodedGift);
+      if(decoded) return decoded;
+    }
+  } catch (error) {
+    console.warn('Gift data in URL hash could not be decoded.', error);
+  }
+
+  try {
+    if(window.db && window.firebaseDoc && window.firebaseGetDoc){
+      const giftRef = window.firebaseDoc(window.db, "bouquets", giftId);
+      const snap = await window.firebaseGetDoc(giftRef);
+      if(snap.exists()) return snap.data();
+    }
+  } catch (error) {
+    console.warn('Firebase load unavailable, trying browser storage.', error);
+  }
+
+  try {
+    const stored = window.localStorage.getItem(`bouquet:${giftId}`);
+    if(stored) return JSON.parse(stored);
+  } catch (error) {
+    console.warn('Local storage load failed', error);
+  }
+
+  return null;
+}
+
 async function checkForSharedGift(){
   const params = new URLSearchParams(window.location.search);
   const giftId = params.get('gift');
@@ -2912,20 +3377,22 @@ async function checkForSharedGift(){
 
   showReceiveLoadingState();
 
-try{
-    const giftRef = window.firebaseDoc(window.db, "bouquets", giftId);
-    const snap = await window.firebaseGetDoc(giftRef);
+  if(!window.storage || !window.storage.get){
+    console.warn('Storage API unavailable — cannot load shared gift');
+    showGiftNotFoundState();
+    return true;
+  }
 
-    if(!snap.exists()){
-        showGiftNotFoundState();
-        return true;
+  try{
+    const result = await window.storage.get('gift:' + giftId, true);
+    if(!result || !result.value){
+      showGiftNotFoundState();
+      return true;
     }
-
-    const decoded = snap.data();
-    showReceiverExperience(decoded, { isDirectOpen:true });
-
-}catch(e){
-    console.error("Error loading bouquet:", e);
+    const decoded = JSON.parse(result.value);
+    showReceiverExperience(decoded);
+  }catch(e){
+    console.warn('Could not load gift payload', e);
     showGiftNotFoundState();
 }
   return true;
@@ -2944,6 +3411,13 @@ async function boot(){
   updateFlowerCountChip();
   renderStage();
   renderBottomActions();
+
+  applyThemeClass();
+  renderThemeOptions();
+  renderThemeDetails();
+  renderPhotoPreview();
+  renderSpotifyPreview();
+  renderShareMusicPreview();
 
   const hadGift = await checkForSharedGift();
   if(!hadGift){
